@@ -9,9 +9,11 @@ import {
   ListRenderItemInfo,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TextInputComponent from '../../components/Input/TextInputComponent';
-import { API_BASE_URL } from '@env';
+import uuid from 'react-native-uuid';
 import Svg, { Circle, Path } from 'react-native-svg';
+import TextInputComponent from '../../components/Input/TextInputComponent';
+import { checkIfHealthRelated } from '../../utils/checkIfHealthRelated';
+import { API_BASE_URL } from '@env';
 
 export type Message = {
   id: string;
@@ -28,9 +30,9 @@ const Chat: React.FC = () => {
     },
   ]);
 
-  const [inputText, setInputText] = useState<string>('');
+  const [inputText, setInputText] = useState('');
   const [selectedPdf, setSelectedPdf] = useState<{ name: string; base64: string }>();
-  const [userName, setUserName] = useState<string>('');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,43 +45,137 @@ const Chat: React.FC = () => {
     fetchUser();
   }, []);
 
+  // const sendMessage = async () => {
+  //   const hasText = inputText.trim() !== '';
+  //   const hasPdf = !!selectedPdf;
+
+  //   if (!hasText && !hasPdf) return;
+
+  //   const userMessage: Message = {
+  //     id: uuid.v4().toString(),
+  //     text: hasText ? inputText.trim() : `[${selectedPdf?.name} yüklendi]`,
+  //     sender: 'user',
+  //   };
+  //   setMessages(prev => [...prev, userMessage]);
+  //   setInputText('');
+
+  //   // 🛑 SAĞLIK DIŞI SORGULARI ENGELLE
+  //   if (hasText) {
+  //     const isRelevant = await checkIfHealthRelated(inputText.trim());
+  //     if (!isRelevant) {
+  //       const warning: Message = {
+  //         id: uuid.v4().toString(),
+  //         text: '🤖 Üzgünüm, yalnızca sağlıkla ilgili konularda yardımcı olabilirim.',
+  //         sender: 'ai',
+  //       };
+  //       setMessages(prev => [...prev, warning]);
+  //       setSelectedPdf(undefined);
+  //       return;
+  //     }
+  //   }
+
+  //   const isPdfOnly = hasPdf && !hasText;
+  //   const endpoint = `${API_BASE_URL}/${isPdfOnly ? 'upload' : 'message'}`;
+  //   const payload = isPdfOnly
+  //     ? { fileName: selectedPdf!.name, fileBase64: selectedPdf!.base64 }
+  //     : { message: hasPdf ? `${inputText.trim()}\n\n[${selectedPdf?.name} yüklendi]` : inputText.trim() };
+
+  //   try {
+  //     const response = await fetch(endpoint, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     const result = await response.json();
+  //     const aiMessage: Message = {
+  //       id: uuid.v4().toString(),
+  //       text: result.answer || 'Cevap alınamadı.',
+  //       sender: 'ai',
+  //     };
+  //     setMessages(prev => [...prev, aiMessage]);
+  //     setSelectedPdf(undefined);
+  //   } catch (error: any) {
+  //     console.error('🛑 API Hatası:', error.message || error);
+  //   }
+  // };
+
   const sendMessage = async () => {
-    if (!inputText.trim() && !selectedPdf) return;
+  const hasText = inputText.trim() !== '';
+  const hasPdf = !!selectedPdf;
 
-    const userMessage: Message = {
-      id: (messages.length + 1).toString(),
-      text: inputText.trim() || `[${selectedPdf?.name} yüklendi]`,
-      sender: 'user',
-    };
+  if (!hasText && !hasPdf) return;
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+  const userMessage: Message = {
+    id: uuid.v4().toString(),
+    text: hasText ? inputText.trim() : `[${selectedPdf?.name} yüklendi]`,
+    sender: 'user',
+  };
+  setMessages(prev => [...prev, userMessage]);
+  setInputText('');
 
-    try {
-       
-      const response = await fetch(`${API_BASE_URL}/${selectedPdf ? 'upload' : 'message'}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          selectedPdf
-            ? { fileName: selectedPdf.name, fileBase64: selectedPdf.base64 }
-            : { message: inputText.trim() }
-        ),
-      });
+  // 🛑 SAĞLIK DIŞI SORGULARI ENGELLE
+  if (hasText) {
+    const isRelevant = await checkIfHealthRelated(inputText.trim());
 
-      const result = await response.json();
-      const botMessage: Message = {
-        id: (messages.length + 2).toString(),
-        text: result.answer,
+    if (!isRelevant) {
+      const warning: Message = {
+        id: uuid.v4().toString(),
+        text: '🤖 Üzgünüm, yalnızca sağlıkla ilgili konularda yardımcı olabilirim.',
         sender: 'ai',
       };
-
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, warning]);
       setSelectedPdf(undefined);
-    } catch (error) {
-      console.error('🛑 API Hatası:', error);
+      return;
     }
-  };
+  }
+
+  const isPdfOnly = hasPdf && !hasText;
+
+  const endpoint = `${API_BASE_URL}/${isPdfOnly ? 'upload' : 'message'}`;
+
+  const payload = isPdfOnly
+    ? {
+        fileName: selectedPdf!.name,
+        fileBase64: selectedPdf!.base64,
+      }
+    : {
+        message: hasPdf
+          ? `${inputText.trim()}\n\n[${selectedPdf?.name} yüklendi]`
+          : inputText.trim(),
+      };
+
+  // ✅ Hatalı payload gönderilmesini engelle
+  if (!isPdfOnly && !payload.message) {
+    console.warn('🚫 message değeri boş, API çağrılmayacak.');
+    return;
+  }
+
+  // 📤 Logla
+  console.log('📤 Gönderilen endpoint:', endpoint);
+  console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    const aiMessage: Message = {
+      id: uuid.v4().toString(),
+      text: result.answer || 'Cevap alınamadı.',
+      sender: 'ai',
+    };
+
+    setMessages(prev => [...prev, aiMessage]);
+    setSelectedPdf(undefined);
+  } catch (error: any) {
+    console.error('🛑 API Hatası:', error.message || error);
+  }
+};
 
   const renderMessage = ({ item }: ListRenderItemInfo<Message>) => (
     <View
@@ -100,19 +196,10 @@ const Chat: React.FC = () => {
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>{userName}</Text>
-        <Svg width={32} height={32} viewBox="0 0 24 24" fill="none">
-          <Circle cx="12" cy="12" r="10" stroke="#555" strokeWidth="2" />
-          <Path
-            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"
-            fill="#555"
-          />
-          <Path
-            d="M6 20c0-2.67 4-4 6-4s6 1.33 6 4"
-            stroke="#555"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </Svg>
+       
+        <View  style={styles.userView}>
+          
+        </View>
       </View>
 
       <FlatList
@@ -170,6 +257,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   messageText: { fontSize: 16, color: '#333' },
+  userView:{
+    borderRadius:100,
+    borderWidth:2,
+    borderColor:'gray',
+    height:40,
+    width:40
+  }
 });
 
 export default Chat;

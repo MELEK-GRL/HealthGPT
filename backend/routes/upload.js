@@ -1,0 +1,63 @@
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const pdfParse = require('pdf-parse');
+const OpenAI = require('openai');
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Burayı kendi fonksiyonuna göre değiştir
+const isHealthRelated = (text) => {
+    return text.toLowerCase().includes('kan') || text.toLowerCase().includes('tahlil');
+};
+
+router.post('/upload', async (req, res) => {
+    try {
+        const { fileName, fileBase64, text: userText } = req.body;
+
+        if (!fileName || !fileBase64)
+            return res.status(400).json({ error: 'Eksik veri' });
+
+        const buffer = Buffer.from(fileBase64, 'base64');
+
+        // uploads klasörüne kaydet
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+        const filePath = path.join(uploadDir, fileName);
+        fs.writeFileSync(filePath, buffer);
+        console.log('📁 PDF dosyası kaydedildi:', filePath);
+
+        const pdfData = await pdfParse(buffer);
+        const pdfText = pdfData.text;
+
+        if (!pdfText || pdfText.trim().length < 10) {
+            return res.json({ answer: 'PDF içeriği çözümlenemedi veya boş olabilir.' });
+        }
+
+        if (!isHealthRelated(pdfText)) {
+            return res.json({ answer: 'Yalnızca sağlıkla ilgili PDF’ler destekleniyor.' });
+        }
+
+        const prompt = userText
+            ? `Tahlil sonuçlarını yorumla:\n\n${pdfText}\n\nKullanıcının notu:\n${userText}`
+            : `Tahlil sonuçlarını yorumla:\n\n${pdfText}`;
+
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [
+                { role: 'system', content: 'Sen bir sağlık asistanısın.' },
+                { role: 'user', content: prompt },
+            ],
+        });
+
+        const answer = completion.choices[0].message.content;
+        console.log('--->completion', JSON.stringify(answer, null, 2));
+        res.json({ answer });
+    } catch (err) {
+        console.error('❌ Upload Hatası:', err);
+        res.status(500).json({ error: 'Sunucu hatası' });
+    }
+});
+
+module.exports = router;
