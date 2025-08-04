@@ -1,21 +1,20 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import Settings from '../screen/settings';
 import Chat from '../screen/chat';
 import Image from '../screen/image';
+import User from '../screen/user/User';
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator: FC = () => {
+const BottomTabNavigator = () => {
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Chat" component={Chat} />
-        <Tab.Screen name="Image" component={Image} />
-        <Tab.Screen name="Settings" component={Settings} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Chat" component={Chat} />
+      <Tab.Screen name="Image" component={Image} />
+      <Tab.Screen name="Settings" component={Settings} />
+       <Tab.Screen name="User" component={User} />
+    </Tab.Navigator>
   );
 };
 

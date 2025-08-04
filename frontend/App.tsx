@@ -1,20 +1,16 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import MainLayout from './src/components/layout/MainLayout';
-import 'react-native-gesture-handler';
-import 'react-native-url-polyfill/auto';
-function App() {
-  return (
-    <View style={styles.container}>
-      <MainLayout />
-    </View>
-  );
-}
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './src/navigation/AppNavigator';
+import { AppProvider } from './src/navigation/context/AppContext';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+const App = () => {
+  return (
+    <AppProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </AppProvider>
+  );
+};
 
 export default App;

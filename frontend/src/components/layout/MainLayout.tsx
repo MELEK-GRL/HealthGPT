@@ -1,19 +1,14 @@
-import React, { FC } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from 'react';
 import BottomTabNavigator from '../../navigation/BottomTabNavigator';
+import { SafeAreaView } from 'react-native';
 
-const MainLayout: FC = () => {
-  return (
-    <View style={styles.container}>
-      <BottomTabNavigator />
-    </View>
-  );
+
+const MainLayout = () => {
+  return <>
+  <SafeAreaView style={{flex:1}}>
+    <BottomTabNavigator />
+  </SafeAreaView>
+  </>;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default MainLayout;

@@ -12,9 +12,11 @@
     "remove-all": "rm -rf node_modules ios/Pods ios/Podfile.lock && yarn cache clean && yarn install && cd ios && pod install --repo-update && cd .."
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native/new-app-screen": "^0.80.2",
     "@react-navigation/bottom-tabs": "^7.4.4",
     "@react-navigation/native": "^7.1.16",
+    "@react-navigation/native-stack": "^7.3.24",
     "openai": "^5.10.2",
     "react": "19.1.0",
     "react-native": "0.80.2",
@@ -24,6 +26,7 @@
     "react-native-gesture-handler": "^2.27.2",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.13.1",
+    "react-native-svg": "^15.12.1",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "9.1.0",
     "react-native-worklets": "^0.4.1"
