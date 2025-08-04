@@ -56,6 +56,7 @@ const Chat: React.FC = () => {
     setInputText('');
 
     try {
+       
       const response = await fetch(`${API_BASE_URL}/${selectedPdf ? 'upload' : 'message'}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,7 +68,6 @@ const Chat: React.FC = () => {
       });
 
       const result = await response.json();
-
       const botMessage: Message = {
         id: (messages.length + 2).toString(),
         text: result.answer,

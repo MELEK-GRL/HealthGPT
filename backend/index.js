@@ -3,12 +3,13 @@ require('dotenv').config(); // .env dosyasını yükle
 const express = require('express');
 const cors = require('cors');
 const pdfParse = require('pdf-parse');
-const mongoose = require('mongoose'); // 🔸 MongoDB için eklendi
+const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 const OpenAI = require('openai');
 const authRoutes = require('./routes/auth');
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -17,6 +18,11 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ MongoDB bağlantısı başarılı'))
     .catch(err => console.error('❌ MongoDB bağlantı hatası:', err));
+
+// ✅ Sağlık testi için test endpoint (önemli)
+app.get('/ping', (req, res) => {
+    res.send('pong');
+});
 
 // ✅ Auth route
 app.use('/auth', authRoutes);
@@ -50,6 +56,7 @@ app.post('/upload', async (req, res) => {
         });
 
         res.json({ answer: completion.choices[0].message.content });
+        console.log('--->completion', JSON.stringify(completion.choices[0].message.content, null, 2));
     } catch (err) {
         console.error('❌ Upload Hatası:', err);
         res.status(500).json({ error: 'Sunucu hatası' });
@@ -71,6 +78,7 @@ app.post('/message', async (req, res) => {
         });
 
         res.json({ answer: completion.choices[0].message.content });
+        console.log('--->completion2', JSON.stringify(completion.choices[0].message.content, null, 2));
     } catch (err) {
         console.error('❌ Message Hatası:', err);
         res.status(500).json({ error: 'Sunucu hatası' });
@@ -78,5 +86,5 @@ app.post('/message', async (req, res) => {
 });
 
 app.listen(3001, () => {
-    console.log('🩺 Backend çalışıyor: http://localhost:3001');
+    console.log('🩺 Backend çalışıyor');
 });

@@ -9,33 +9,38 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { API_BASE_URL } from '@env';
 const Login = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const res = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
 
-      const data = await res.json();
+const handleLogin = async () => {
+  const url = `${API_BASE_URL}/auth/login`;
+  console.log('🔐 Login URL:', url);
+  console.log('📤 Giriş verisi:', { email, password });
 
-      if (res.ok) {
-        await AsyncStorage.setItem('token', data.token);
-        await AsyncStorage.setItem('user', JSON.stringify(data.user));
-        // ❗Yönlendirme yapma, AppNavigator zaten token'ı kontrol edip geçiş yapacak
-      } else {
-        Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
-      }
-    } catch (error) {
-      console.error('❌ Login error:', error);
-      Alert.alert('Sunucu Hatası', 'Sunucuya bağlanılamadı.');
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
     }
-  };
+  } catch (error: any) {
+    console.error('❌ Login error:', error.message || error);
+    Alert.alert('Sunucu Hatası', error.message || 'Sunucuya bağlanılamadı.');
+  }
+};
+
 
   return (
     <View style={styles.container}>
