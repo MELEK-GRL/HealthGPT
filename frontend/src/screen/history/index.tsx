@@ -7,11 +7,10 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
-import { useIsFocused } from '@react-navigation/native';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -32,12 +31,13 @@ const History = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<HistoryScreenNavigationProp>();
   const { w1px, h1px, fs1px } = useResponsive();
-const isFocused = useIsFocused();
-useEffect(() => {
-  if (isFocused) {
-    fetchConversations();
-  }
-}, [isFocused]);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchConversations();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     fetchConversations();
@@ -76,21 +76,30 @@ useEffect(() => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#ffffff',
       padding: 16 * w1px,
     },
     title: {
       fontSize: 20 * fs1px,
       fontWeight: 'bold',
       marginBottom: 16 * h1px,
+      color: '#7D5BA6',
+      textAlign: 'center',
     },
     item: {
-      backgroundColor: '#f0f4f8',
+      backgroundColor: '#ffffff',
       padding: 16 * h1px,
       marginBottom: 12 * h1px,
       borderRadius: 10 * fs1px,
       flexDirection: 'row',
       alignItems: 'center',
+      borderWidth: 2,
+      borderColor: '#7D5BA6',
+      shadowColor: '#000',
+      shadowOpacity: 0.05,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 2,
     },
     text: {
       fontSize: 16 * fs1px,
@@ -109,7 +118,7 @@ useEffect(() => {
       fontSize: 14 * fs1px,
     },
     deleteButton: {
-      backgroundColor: '#ff6b6b',
+      backgroundColor: '#F5A9D0',
       paddingVertical: 6 * h1px,
       paddingHorizontal: 10 * w1px,
       borderRadius: 6 * fs1px,

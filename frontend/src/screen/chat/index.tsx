@@ -53,17 +53,6 @@ const Chat: React.FC = () => {
     };
     fetchUser();
   }, []);
-  useEffect(() => {
-  // Sadece yeni bir konuşma başlatıldığında çalışsın
-  if (!conversationId) {
-    const welcomeMessage: Message = {
-      id: uuid.v4().toString(),
-      text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-      sender: 'ai',
-    };
-    setMessages([welcomeMessage]);
-  }
-}, [userName]);
 
   // Eğer geçmiş konuşma varsa çek
   useEffect(() => {
