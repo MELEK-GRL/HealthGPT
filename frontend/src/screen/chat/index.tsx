@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ListRenderItemInfo,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
@@ -16,6 +17,7 @@ import type { RouteProp } from '@react-navigation/native';
 import TextInputComponent from '../../components/Input/TextInputComponent';
 import { checkIfHealthRelated } from '../../utils/checkIfHealthRelated';
 import { API_BASE_URL } from '@env';
+import { useResponsive } from '../../utils/responsive';
 
 export type Message = {
   id: string;
@@ -32,7 +34,7 @@ type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>;
 const Chat: React.FC = () => {
   const route = useRoute<ChatRouteProp>();
   const conversationId = route.params?.conversationId;
-
+  const styles = useResponsiveStyles();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [selectedPdf, setSelectedPdf] = useState<{ name: string; base64: string }>();
@@ -198,11 +200,27 @@ const Chat: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <View style={styles.header}>
-        <Text style={styles.headerText}>{userName}</Text>
-        <View style={styles.userView} />
-      </View>
-
+      
+ <View style={styles.headerContent}>
+<TouchableOpacity
+  style={styles.headerMsg}
+  onPress={() => {
+    const welcomeMessage: Message = {
+      id: uuid.v4().toString(),
+      text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+      sender: 'ai',
+    };
+    setMessages([welcomeMessage]);
+    setCurrentConversationId(null);
+  }}
+>
+  <Text style={styles.headerMsgText}>Yeni Sohbet</Text>
+</TouchableOpacity>
+  <View style={styles.header}>
+    <Text style={styles.headerText}>{userName}</Text>
+    {/* <View style={styles.userView} /> */}
+  </View>
+</View>
       <FlatList
         data={messages}
         keyExtractor={item => item.id}
@@ -222,49 +240,133 @@ const Chat: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9fafd' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#fff',
-  },
-  headerText: {
-    marginRight: 8,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  messagesList: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
-  messageBubble: {
-    padding: 12,
-    borderRadius: 16,
-    marginVertical: 6,
-    maxWidth: '75%',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  userBubble: {
-    backgroundColor: '#c7f0db',
-    alignSelf: 'flex-end',
-  },
-  aiBubble: {
-    backgroundColor: '#e0e7ff',
-    alignSelf: 'flex-start',
-  },
-  messageText: { fontSize: 16, color: '#333' },
-  userView: {
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: 'gray',
-    height: 40,
-    width: 40,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: { flex: 1, backgroundColor: '#f9fafd' },
+//   headerContent:{
+// flexDirection:'row',
+// width:'100%',
+// justifyContent:'space-between',
+// alignItems:'center',
+//    padding: 12,
+//     backgroundColor: '#fff',
+//   },
+//   headerMsg:{
+//     backgroundColor:'gray',
+//      padding: 8,
+//      borderRadius:6,
+//   },
+//    headerMsgText: {
+//     marginRight: 8,
+//     fontSize: 16,
+//     fontWeight: '600',
+//     color: 'white',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'flex-end',
+//     alignItems: 'center',
+ 
+//   },
+//   headerText: {
+//     marginRight: 8,
+//     fontSize: 16,
+//     fontWeight: '600',
+//     color: '#333',
+//   },
+//   messagesList: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
+//   messageBubble: {
+//     padding: 12,
+//     borderRadius: 16,
+//     marginVertical: 6,
+//     maxWidth: '75%',
+//     shadowColor: '#000',
+//     shadowOpacity: 0.05,
+//     shadowOffset: { width: 0, height: 1 },
+//     shadowRadius: 2,
+//     elevation: 2,
+//   },
+//   userBubble: {
+//     backgroundColor: '#c7f0db',
+//     alignSelf: 'flex-end',
+//   },
+//   aiBubble: {
+//     backgroundColor: '#e0e7ff',
+//     alignSelf: 'flex-start',
+//   },
+//   messageText: { fontSize: 16, color: '#333' },
+//   userView: {
+//     borderRadius: 100,
+//     borderWidth: 2,
+//     borderColor: 'gray',
+//     height: 40,
+//     width: 40,
+//   },
+// });
+export const useResponsiveStyles = () => {
+  const { w1px, h1px, fs1px } = useResponsive();
+
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#f9fafd',
+    },
+    headerContent: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 12 * h1px,
+      backgroundColor: '#fff',
+    },
+    headerMsg: {
+      backgroundColor: 'gray',
+      padding: 8 * h1px,
+      borderRadius: 6 * fs1px,
+    },
+    headerMsgText: {
+      fontSize: 16 * fs1px,
+      fontWeight: '600',
+      color: 'white',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    headerText: {
+      fontSize: 16 * fs1px,
+      fontWeight: '600',
+      color: '#333',
+    },
+    messagesList: {
+      flex: 1,
+      paddingHorizontal: 20 * w1px,
+      paddingTop: 10 * w1px,
+    },
+    messageBubble: {
+      padding: 12 * fs1px,
+      borderRadius: 16 * fs1px,
+      marginVertical: 6 * fs1px,
+      maxWidth: '75%',
+      shadowColor: '#000',
+      shadowOpacity: 0.05,
+      shadowOffset: { width: 0, height: 1 },
+      shadowRadius: 2,
+      elevation: 2,
+    },
+    userBubble: {
+      backgroundColor: '#c7f0db',
+      alignSelf: 'flex-end',
+    },
+    aiBubble: {
+      backgroundColor: '#e0e7ff',
+      alignSelf: 'flex-start',
+    },
+    messageText: {
+      fontSize: 16 * fs1px,
+      color: '#333',
+    },
+  });
+};
 
 export default Chat;
