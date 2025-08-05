@@ -3,15 +3,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, View } from 'react-native';
 
-import AuthNavigator from '../navigation/AutNavigator';
+import AuthNavigator from './AutNavigator';
 import MainLayout from '../components/layout/MainLayout';
+import ChatDetail from '../screen/chat/chatDetail';
+import { RootStackParamList } from './NavigationTypes';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<null | boolean>(null);
 
-  // Bu fonksiyonu hem ilk render'da hem login sonrası çağıracağız
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
     setIsLoggedIn(!!token);
@@ -19,11 +20,7 @@ const AppNavigator = () => {
 
   useEffect(() => {
     checkToken();
-
-    const interval = setInterval(() => {
-      checkToken();
-    }, 1000); // token değişimini sürekli kontrol et
-
+    const interval = setInterval(checkToken, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -38,7 +35,10 @@ const AppNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isLoggedIn ? (
-        <Stack.Screen name="MainLayout" component={MainLayout} />
+        <>
+          <Stack.Screen name="MainLayout" component={MainLayout} />
+          <Stack.Screen name="ChatDetail" component={ChatDetail} />
+        </>
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} />
       )}
