@@ -44,6 +44,7 @@ const History = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/conversations/${user._id}`);
       const data = await response.json();
+      console.log('📦 Gelen veri:', data);
       setConversations(data);
     } catch (error) {
       console.error('🛑 Konuşmalar alınamadı:', error);

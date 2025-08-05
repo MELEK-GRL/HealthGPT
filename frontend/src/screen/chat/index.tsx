@@ -47,6 +47,7 @@ const Chat: React.FC = () => {
       const userStr = await AsyncStorage.getItem('user');
       if (userStr) {
         const user = JSON.parse(userStr);
+        console.log('👤 Kullanıcı:', userStr);
         setUserName(user.name);
       }
     };
@@ -79,6 +80,7 @@ const Chat: React.FC = () => {
   }, [conversationId]);
 
   const sendMessage = async () => {
+     console.warn('--->sendMessage çalıştı');
     const hasText = inputText.trim() !== '';
     const hasPdf = !!selectedPdf;
 
@@ -109,7 +111,7 @@ const Chat: React.FC = () => {
 
     const isPdfOnly = hasPdf && !hasText;
     const endpoint = `${API_BASE_URL}/${isPdfOnly ? 'upload' : 'message'}`;
-
+ console.warn('--->endpoint ',JSON.stringify(endpoint,null));
     const payload = isPdfOnly
       ? {
           fileName: selectedPdf!.name,
@@ -134,7 +136,7 @@ const Chat: React.FC = () => {
       });
 
       const result = await response.json();
-
+ console.warn('--->result ',JSON.stringify(result,null));
       const aiMessage: Message = {
         id: uuid.v4().toString(),
         text: result.answer || 'Cevap alınamadı.',
@@ -175,6 +177,7 @@ const Chat: React.FC = () => {
           });
 
           const newConv = await createRes.json();
+          console.log('--->newConv',JSON.stringify(newConv,null,2))
           setCurrentConversationId(newConv._id);
         }
       }

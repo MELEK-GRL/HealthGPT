@@ -48,7 +48,7 @@ const TextInputComponent: React.FC<Props> = ({
         textAlignVertical="top"
       />
 
-      {/* <PdfUpload onPdfSelected={onPdfSelected} /> */}
+      <PdfUpload onPdfSelected={onPdfSelected} />
 
       <TouchableOpacity
         style={[styles.sendButton, { opacity: sendEnabled ? 1 : 0.5 }]}
