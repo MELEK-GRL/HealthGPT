@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
+import { useIsFocused } from '@react-navigation/native';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -31,6 +32,12 @@ const History = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<HistoryScreenNavigationProp>();
   const { w1px, h1px, fs1px } = useResponsive();
+const isFocused = useIsFocused();
+useEffect(() => {
+  if (isFocused) {
+    fetchConversations();
+  }
+}, [isFocused]);
 
   useEffect(() => {
     fetchConversations();

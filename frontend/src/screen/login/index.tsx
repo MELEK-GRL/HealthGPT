@@ -13,6 +13,7 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 
 const Login = ({ navigation }: any) => {
+ const [name, setName] = useState(''); // 👈 yeni
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,8 +31,10 @@ const Login = ({ navigation }: any) => {
       const data = await res.json();
 
       if (res.ok) {
-        await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        await AsyncStorage.setItem('email', email);
+        await AsyncStorage.setItem('name', name); 
       } else {
         Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
       }
@@ -84,6 +87,14 @@ const Login = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Giriş Yap</Text>
+
+      <TextInput
+        placeholder="Adınız"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+        autoCapitalize="words"
+      />
 
       <TextInput
         placeholder="Email"
