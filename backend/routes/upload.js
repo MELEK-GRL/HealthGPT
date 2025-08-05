@@ -26,8 +26,6 @@ router.post('/upload', async (req, res) => {
         if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
         const filePath = path.join(uploadDir, fileName);
         fs.writeFileSync(filePath, buffer);
-        console.log('📁 PDF dosyası kaydedildi:', filePath);
-
         const pdfData = await pdfParse(buffer);
         const pdfText = pdfData.text;
 
@@ -52,7 +50,6 @@ router.post('/upload', async (req, res) => {
         });
 
         const answer = completion.choices[0].message.content;
-        console.log('--->completion', JSON.stringify(answer, null, 2));
         res.json({ answer });
     } catch (err) {
         console.error('❌ Upload Hatası:', err);

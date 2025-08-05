@@ -26,11 +26,7 @@ const pickPdf = async () => {
       fileUri = fileUri.replace('file://', '');
     }
     const decodedPath = decodeURIComponent(fileUri);
-
-    console.log('📂 Gerçek dosya yolu:', decodedPath);
-
     const exists = await RNFS.exists(decodedPath);
-    console.log('📁 Dosya var mı?', exists);
 
     if (!exists) {
       Alert.alert('Hata', 'PDF dosyasına erişilemedi. Lütfen farklı bir dosya seçin.');

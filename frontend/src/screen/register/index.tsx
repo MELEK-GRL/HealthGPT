@@ -23,8 +23,6 @@ const Register = ({ navigation }: any) => {
       });
 
       const data = await res.json();
-      console.log('✅ Register response:', data);
-
       if (res.ok) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user)); // Kullanıcı bilgisini kaydet

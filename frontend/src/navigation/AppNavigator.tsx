@@ -5,7 +5,6 @@ import { ActivityIndicator, View } from 'react-native';
 
 import AuthNavigator from './AutNavigator';
 import MainLayout from '../components/layout/MainLayout';
-import ChatDetail from '../screen/chat/chatDetail';
 import { RootStackParamList } from './NavigationTypes';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,7 +36,6 @@ const AppNavigator = () => {
       {isLoggedIn ? (
         <>
           <Stack.Screen name="MainLayout" component={MainLayout} />
-          <Stack.Screen name="ChatDetail" component={ChatDetail} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} />

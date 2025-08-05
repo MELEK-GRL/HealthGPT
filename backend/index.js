@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/upload'); // ❗️uploads değil!
 const checkRoute = require('./routes/check');
 const messageRoutes = require('./routes/message');
+const conversationRoutes = require('./routes/conversation');
 
 
 // ✅ Express app başlat
@@ -23,6 +24,7 @@ app.use('/auth', authRoutes);
 app.use('/check', checkRoute);
 app.use('/', uploadRoutes);
 app.use('/message', messageRoutes);
+app.use('/conversations', conversationRoutes);
 
 // ✅ Sağlık testi endpoint'i
 app.get('/ping', (req, res) => {
@@ -31,10 +33,10 @@ app.get('/ping', (req, res) => {
 
 // ✅ MongoDB bağlantısı
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/test')
-    .then(() => console.log('✅ MongoDB bağlantısı başarılı'))
-    .catch(err => console.error('❌ MongoDB bağlantı hatası:', err));
+    .then(() => console.log(' MongoDB bağlantısı başarılı'))
+    .catch(err => console.error(' MongoDB bağlantı hatası:', err));
 
 // ✅ Sunucuyu başlat
 app.listen(3001, '0.0.0.0', () => {
-    console.log('🩺 Backend çalışıyor: http://localhost:3001');
+    console.log('Backend çalışıyor: http://localhost:3001');
 });

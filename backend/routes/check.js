@@ -28,7 +28,6 @@ router.post('/', async (req, res) => {
         });
 
         const result = completion.choices[0].message.content?.toLowerCase().trim();
-        console.log('--->result', JSON.stringify(result, null, 2));
         res.json({ isHealthRelated: result === 'evet' });
     } catch (err) {
         console.error('❌ check API error:', err);

@@ -17,9 +17,6 @@ const Login = ({ navigation }: any) => {
 
 const handleLogin = async () => {
   const url = `${API_BASE_URL}/auth/login`;
-  console.log('🔐 Login URL:', url);
-  console.log('📤 Giriş verisi:', { email, password });
-
   try {
     const res = await fetch(url, {
       method: 'POST',
