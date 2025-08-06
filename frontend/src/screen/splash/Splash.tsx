@@ -6,30 +6,30 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
 import { useResponsive } from '../../utils/responsive';
 
- import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 const Splash = ({ navigation }: Props) => {
   const { w1px, h1px, fs1px } = useResponsive();
 
-// diğer importlar aynı
+  // diğer importlar aynı
 
-const handleContinue = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
+  const handleContinue = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
 
-    if (token) {
-      // Giriş yapılmış → Ana sayfaya gönder
-      navigation.replace('MainLayout');
-    } else {
-      // Giriş yapılmamış → Auth (Login) ekranına yönlendir
+      if (token) {
+        // Giriş yapılmış → Ana sayfaya gönder
+        navigation.replace('MainLayout');
+      } else {
+        // Giriş yapılmamış → Auth (Login) ekranına yönlendir
+        navigation.replace('Auth');
+      }
+    } catch (error) {
+      console.error('Splash kontrol hatası:', error);
       navigation.replace('Auth');
     }
-  } catch (error) {
-    console.error('Splash kontrol hatası:', error);
-    navigation.replace('Auth');
-  }
-};
+  };
 
 
   return (

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../navigation/context/AppContext';
@@ -12,16 +11,18 @@ import { useResponsive } from '../../utils/responsive';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
+import CenterModal from '../../components/modal/CenterModal'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainLayout'>;
 
 type UserType = {
   name: string;
-  email?: string; // ⬅️ Artık zorunlu değil
+  email?: string;
 };
 
 const User = () => {
   const [user, setUser] = useState<UserType | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<NavigationProp>();
   const { setIsLoggedIn } = useAppContext();
   const { w1px, h1px, fs1px } = useResponsive();
@@ -37,26 +38,15 @@ const User = () => {
     fetchUser();
   }, []);
 
-  const handleLogout = async () => {
-    Alert.alert('Çıkış Yap', 'Oturumu kapatmak istiyor musun?', [
-      {
-        text: 'İptal',
-        style: 'cancel',
-      },
-      {
-        text: 'Evet',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await AsyncStorage.multiRemove(['token', 'user']);
-            setIsLoggedIn(false);
-            navigation.replace('Auth');
-          } catch (error) {
-            console.error('Çıkış sırasında hata:', error);
-          }
-        },
-      },
-    ]);
+  const confirmLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove(['token', 'user']);
+      setIsLoggedIn(false);
+      setModalVisible(false);
+      navigation.replace('Auth');
+    } catch (error) {
+      console.error('Çıkış sırasında hata:', error);
+    }
   };
 
   if (!user) {
@@ -69,23 +59,33 @@ const User = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Profil Bilgileri</Text>
+      <Text style={[styles.header, { fontSize: 22 * fs1px }]}>Profil Bilgileri</Text>
 
       <View style={styles.infoBox}>
-        <Text style={styles.label}>👤 Ad:</Text>
-        <Text style={styles.value}>{user.name}</Text>
+        <Text style={[styles.label, { fontSize: 16 * fs1px }]}>👤 Ad:</Text>
+        <Text style={[styles.value, { fontSize: 15 * fs1px }]}>{user.name}</Text>
 
         {user.email ? (
           <>
-            <Text style={styles.label}>📧 E-posta:</Text>
-            <Text style={styles.value}>{user.email}</Text>
+            <Text style={[styles.label, { fontSize: 16 * fs1px }]}>📧 E-posta:</Text>
+            <Text style={[styles.value, { fontSize: 15 * fs1px }]}>{user.email}</Text>
           </>
         ) : null}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Çıkış Yap</Text>
+      <TouchableOpacity
+        style={[styles.logoutButton, { paddingVertical: 14 * h1px, borderRadius: 10 * fs1px }]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={[styles.logoutText, { fontSize: 16 * fs1px }]}>Çıkış Yap</Text>
       </TouchableOpacity>
+
+      <CenterModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={confirmLogout}
+        message="Oturumu kapatmak istiyor musun?"
+      />
     </View>
   );
 };
@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    fontSize: 22,
     fontWeight: '700',
     marginBottom: 24,
     textAlign: 'center',
@@ -123,25 +122,20 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   label: {
-    fontSize: 16,
     fontWeight: '600',
     marginTop: 12,
     color: '#444',
   },
   value: {
-    fontSize: 15,
     color: '#666',
     marginBottom: 8,
   },
   logoutButton: {
     backgroundColor: '#ff3b30',
-    paddingVertical: 14,
-    borderRadius: 10,
     alignItems: 'center',
   },
   logoutText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 16,
   },
 });

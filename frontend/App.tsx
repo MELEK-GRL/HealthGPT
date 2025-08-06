@@ -1,26 +1,44 @@
-// App.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from './src/navigation/AppNavigator';
 import { AppProvider } from './src/navigation/context/AppContext';
-import { Dimensions } from 'react-native';
+import AppNavigator from './src/navigation/AppNavigator';
+
+import { Dimensions, AppState, AppStateStatus } from 'react-native';
 import useDeviceStore from './src/store/useDeviceStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   const setDimensions = useDeviceStore(state => state.setDimensions);
+  const appState = useRef(AppState.currentState);
 
+  // Ekran boyutlarını store'a yaz
   useEffect(() => {
     const updateDimensions = () => {
       const { width, height } = Dimensions.get('window');
       setDimensions(width, height);
     };
 
-    const subscription = Dimensions.addEventListener('change', updateDimensions);
+    const dimensionSub = Dimensions.addEventListener('change', updateDimensions);
     updateDimensions();
 
-    return () => {
-      subscription.remove();
+    return () => dimensionSub.remove();
+  }, []);
+
+  // Uygulama arka plana alınırsa token ve user sil
+  useEffect(() => {
+    const handleAppStateChange = async (nextState: AppStateStatus) => {
+      if (
+        appState.current.match(/active|inactive/) &&
+        nextState === 'background'
+      ) {
+        console.log('📴 Uygulama kapatıldı, oturum siliniyor...');
+        await AsyncStorage.multiRemove(['token', 'user']);
+      }
+      appState.current = nextState;
     };
+
+    const stateSub = AppState.addEventListener('change', handleAppStateChange);
+    return () => stateSub.remove();
   }, []);
 
   return (
