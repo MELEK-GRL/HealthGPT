@@ -1,4 +1,3 @@
-// Login.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -13,37 +12,32 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 
 const Login = ({ navigation }: any) => {
- const [name, setName] = useState(''); // 👈 yeni
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-
   const { w1px, h1px, fs1px } = useResponsive();
 
-const handleLogin = async () => {
-  const url = `${API_BASE_URL}/auth/login`;
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      await AsyncStorage.setItem('token', data.token);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user)); // ✅ _id, name, email içeriyor
-
-      navigation.replace('MainLayout');
-    } else {
-      Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
+      if (res.ok) {
+        await AsyncStorage.setItem('token', data.token);
+        await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        navigation.replace('MainLayout');
+      } else {
+        Alert.alert('Giriş Hatalı', data.message || 'Hatalı kullanıcı adı ya da şifre');
+      }
+    } catch (error: any) {
+      console.error('❌ Login error:', error.message || error);
+      Alert.alert('Sunucu Hatası', error.message || 'Sunucuya bağlanılamadı.');
     }
-  } catch (error: any) {
-    console.error('❌ Login error:', error.message || error);
-    Alert.alert('Sunucu Hatası', error.message || 'Sunucuya bağlanılamadı.');
-  }
-};
-
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -90,19 +84,10 @@ const handleLogin = async () => {
       <Text style={styles.title}>Giriş Yap</Text>
 
       <TextInput
-        placeholder="Adınız"
+        placeholder="Kullanıcı Adı"
         value={name}
         onChangeText={setName}
         style={styles.input}
-        autoCapitalize="words"
-      />
-
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
         autoCapitalize="none"
       />
 

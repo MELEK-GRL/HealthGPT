@@ -3,15 +3,10 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    email: {
-        type: String,
-        unique: true,
-        required: true,
-    },
+    email: { type: String, unique: false, required: false }, // Email opsiyonel
     password: { type: String, required: true },
 });
 
-// Şifreyi kaydetmeden önce hashle
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
@@ -20,7 +15,6 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-// Şifre kontrolü
 userSchema.methods.comparePassword = function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };

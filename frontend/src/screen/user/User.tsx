@@ -9,7 +9,6 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../navigation/context/AppContext';
 import { useResponsive } from '../../utils/responsive';
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
@@ -18,7 +17,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainLayout'
 
 type UserType = {
   name: string;
-  email: string;
+  email?: string; // ⬅️ Artık zorunlu değil
 };
 
 const User = () => {
@@ -49,7 +48,7 @@ const User = () => {
         style: 'destructive',
         onPress: async () => {
           try {
-            await AsyncStorage.multiRemove(['token', 'user', 'email', 'name']);
+            await AsyncStorage.multiRemove(['token', 'user']);
             setIsLoggedIn(false);
             navigation.replace('Auth');
           } catch (error) {
@@ -76,8 +75,12 @@ const User = () => {
         <Text style={styles.label}>👤 Ad:</Text>
         <Text style={styles.value}>{user.name}</Text>
 
-        <Text style={styles.label}>📧 E-posta:</Text>
-        <Text style={styles.value}>{user.email}</Text>
+        {user.email ? (
+          <>
+            <Text style={styles.label}>📧 E-posta:</Text>
+            <Text style={styles.value}>{user.email}</Text>
+          </>
+        ) : null}
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

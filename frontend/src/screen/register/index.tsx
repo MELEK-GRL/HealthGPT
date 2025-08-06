@@ -22,17 +22,27 @@ const Register = () => {
 
   const handleRegister = async () => {
     try {
+      const body: any = {
+        name,
+        password,
+      };
+
+      // Eğer email girildiyse body'e ekle
+      if (email.trim() !== '') {
+        body.email = email.trim();
+      }
+
       const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
       if (res.ok) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
-        navigation.navigate('MainLayout' as never); // Giriş sonrası Chat'e yönlendirme
+        navigation.navigate('MainLayout' as never);
       } else {
         Alert.alert('Başarısız', data.message || 'Hata oluştu.');
       }
@@ -93,14 +103,16 @@ const Register = () => {
         onChangeText={setName}
         style={styles.input}
       />
+
       <TextInput
-        placeholder="Email"
+        placeholder="Email (opsiyonel)"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <TextInput
         placeholder="Şifre"
         value={password}
