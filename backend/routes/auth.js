@@ -4,12 +4,12 @@ const User = require('../models/User');
 
 const router = express.Router();
 
-// Kayıt
+// ✅ Kayıt
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Aynı email var mı?
+        // 🔒 Aynı e-posta kontrolü
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
@@ -18,15 +18,22 @@ router.post('/register', async (req, res) => {
             });
         }
 
+        // 🧾 Yeni kullanıcı oluştur
         const user = await User.create({ name, email, password });
 
+        // 🪪 JWT oluştur
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: '7d',
         });
 
+        // ✅ Geriye _id dahil tüm bilgiler gönder
         res.json({
             token,
-            user: { name: user.name, email: user.email },
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+            },
         });
     } catch (err) {
         res.status(400).json({
@@ -36,11 +43,12 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Giriş
+// ✅ Giriş
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // 📩 Kullanıcıyı e-posta ile bul
         const user = await User.findOne({ email });
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({
@@ -49,13 +57,19 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // 🪪 JWT oluştur
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: '7d',
         });
 
+        // ✅ Geriye _id dahil tüm bilgiler gönder
         res.json({
             token,
-            user: { name: user.name, email: user.email },
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+            },
         });
     } catch (err) {
         res.status(500).json({

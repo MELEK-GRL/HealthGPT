@@ -19,30 +19,31 @@ const Login = ({ navigation }: any) => {
 
   const { w1px, h1px, fs1px } = useResponsive();
 
-  const handleLogin = async () => {
-    const url = `${API_BASE_URL}/auth/login`;
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+const handleLogin = async () => {
+  const url = `${API_BASE_URL}/auth/login`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok) {
+    if (res.ok) {
       await AsyncStorage.setItem('token', data.token);
-        await AsyncStorage.setItem('user', JSON.stringify(data.user));
-        await AsyncStorage.setItem('email', email);
-        await AsyncStorage.setItem('name', name); 
-      } else {
-        Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
-      }
-    } catch (error: any) {
-      console.error('❌ Login error:', error.message || error);
-      Alert.alert('Sunucu Hatası', error.message || 'Sunucuya bağlanılamadı.');
+      await AsyncStorage.setItem('user', JSON.stringify(data.user)); // ✅ _id, name, email içeriyor
+
+      navigation.replace('MainLayout');
+    } else {
+      Alert.alert('Giriş Hatalı', data.message || 'Hatalı e-posta ya da şifre');
     }
-  };
+  } catch (error: any) {
+    console.error('❌ Login error:', error.message || error);
+    Alert.alert('Sunucu Hatası', error.message || 'Sunucuya bağlanılamadı.');
+  }
+};
+
 
   const styles = StyleSheet.create({
     container: {

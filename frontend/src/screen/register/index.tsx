@@ -32,7 +32,7 @@ const Register = () => {
       if (res.ok) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
-        navigation.navigate('Chat' as never); // Giriş sonrası Chat'e yönlendirme
+        navigation.navigate('MainLayout' as never); // Giriş sonrası Chat'e yönlendirme
       } else {
         Alert.alert('Başarısız', data.message || 'Hata oluştu.');
       }

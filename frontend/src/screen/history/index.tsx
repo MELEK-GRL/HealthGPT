@@ -47,7 +47,7 @@ const History = () => {
     const userStr = await AsyncStorage.getItem('user');
     if (!userStr) return;
     const user = JSON.parse(userStr);
-
+ console.log('🧠 Parsed user:', JSON.stringify(user, null, 2));
     try {
       const response = await fetch(`${API_BASE_URL}/conversations/${user._id}`);
       const data = await response.json();
