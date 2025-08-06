@@ -12,9 +12,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 type Props = {
   onPdfSelected: (pdf: { name: string; base64: string }) => void;
+  selectedPdf?: { name: string };
 };
 
-const PdfUpload: React.FC<Props> = ({ onPdfSelected }) => {
+const PdfUpload: React.FC<Props> = ({ onPdfSelected, selectedPdf }) => {
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -55,7 +56,6 @@ const PdfUpload: React.FC<Props> = ({ onPdfSelected }) => {
         return;
       }
 
-      // iOS'ta file:// önekini temizle
       if (Platform.OS === 'ios' && fileUri.startsWith('file://')) {
         fileUri = fileUri.replace('file://', '');
       }
@@ -81,7 +81,11 @@ const PdfUpload: React.FC<Props> = ({ onPdfSelected }) => {
 
   return (
     <TouchableOpacity style={styles.iconWrapper} onPress={pickPdf}>
-      <Icon name="document-attach-outline" size={24} color="#0057d9" />
+      <Icon
+        name={selectedPdf ? 'checkmark-circle-outline' : 'document-attach-outline'}
+        size={24}
+        color={selectedPdf ? 'green' : '#0057d9'}
+      />
     </TouchableOpacity>
   );
 };

@@ -29,14 +29,14 @@ const TextInputComponent: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      {selectedPdf && (
+      {/* {selectedPdf && (
         <Icon
           name="document-text-outline"
           size={22}
           color="#007aff"
           style={styles.pdfIcon}
         />
-      )}
+      )} */}
 
       <TextInput
         style={styles.input}
@@ -48,7 +48,8 @@ const TextInputComponent: React.FC<Props> = ({
         textAlignVertical="top"
       />
 
-      <PdfUpload onPdfSelected={onPdfSelected} />
+     <PdfUpload onPdfSelected={onPdfSelected} selectedPdf={selectedPdf} />
+
 
       <TouchableOpacity
         style={[styles.sendButton, { opacity: sendEnabled ? 1 : 0.5 }]}
