@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
 import CenterModal from '../../components/modal/CenterModal'
-
+import colors from '../../theme/colors';
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainLayout'>;
 
 type UserType = {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   logoutButton: {
-    backgroundColor: '#ff3b30',
+    backgroundColor: colors.primary,
     alignItems: 'center',
   },
   logoutText: {
