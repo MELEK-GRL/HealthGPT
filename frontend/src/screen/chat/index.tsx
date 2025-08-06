@@ -91,7 +91,6 @@ useEffect(() => {
     }
   }, [conversationId, userName]);
 
-
 const sendMessage = async () => {
   const hasText = inputText.trim() !== '';
   const hasPdf = !!selectedPdf;
@@ -121,13 +120,18 @@ const sendMessage = async () => {
     }
   }
 
-  const endpoint = `${API_BASE_URL}/upload`; // ➜ Artık PDF + Text için burası kullanılıyor
-  const payload = {
-    fileName: selectedPdf?.name,
-    fileBase64: selectedPdf?.base64,
-    text: inputText.trim(),
-  };
+  const endpoint = `${API_BASE_URL}/upload`;
 
+  // ✅ Dinamik payload
+  const payload: Record<string, string> = {};
+  if (hasText) {
+    payload.text = inputText.trim();
+  }
+  if (hasPdf && selectedPdf?.name && selectedPdf?.base64) {
+    payload.fileName = selectedPdf.name;
+    payload.fileBase64 = selectedPdf.base64;
+  }
+console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2)); 
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -136,6 +140,8 @@ const sendMessage = async () => {
     });
 
     const result = await response.json();
+    console.log('--->result', JSON.stringify(result, null, 2));
+
     const aiMessage: Message = {
       id: uuid.v4().toString(),
       text: result.answer || 'Cevap alınamadı.',

@@ -16,30 +16,37 @@ router.post('/upload', async (req, res) => {
     try {
         const { fileName, fileBase64, text: userText } = req.body;
 
-        if (!fileName || !fileBase64)
+        if (!userText && (!fileName || !fileBase64)) {
             return res.status(400).json({ error: 'Eksik veri' });
-
-        const buffer = Buffer.from(fileBase64, 'base64');
-
-        // uploads klasörüne kaydet
-        const uploadDir = path.join(__dirname, '..', 'uploads');
-        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-        const filePath = path.join(uploadDir, fileName);
-        fs.writeFileSync(filePath, buffer);
-        const pdfData = await pdfParse(buffer);
-        const pdfText = pdfData.text;
-
-        if (!pdfText || pdfText.trim().length < 10) {
-            return res.json({ answer: 'PDF içeriği çözümlenemedi veya boş olabilir.' });
         }
 
-        if (!isHealthRelated(pdfText)) {
-            return res.json({ answer: 'Yalnızca sağlıkla ilgili PDF’ler destekleniyor.' });
+        let pdfText = '';
+
+        if (fileName && fileBase64) {
+            const buffer = Buffer.from(fileBase64, 'base64');
+
+            // uploads klasörüne kaydet
+            const uploadDir = path.join(__dirname, '..', 'uploads');
+            if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+            const filePath = path.join(uploadDir, fileName);
+            fs.writeFileSync(filePath, buffer);
+            const pdfData = await pdfParse(buffer);
+            pdfText = pdfData.text;
+
+            if (!pdfText || pdfText.trim().length < 10) {
+                return res.json({ answer: 'PDF içeriği çözümlenemedi veya boş olabilir.' });
+            }
+
+            if (!isHealthRelated(pdfText)) {
+                return res.json({ answer: 'Yalnızca sağlıkla ilgili PDF’ler destekleniyor.' });
+            }
         }
 
-        const prompt = userText
-            ? `Tahlil sonuçlarını yorumla:\n\n${pdfText}\n\nKullanıcının notu:\n${userText}`
-            : `Tahlil sonuçlarını yorumla:\n\n${pdfText}`;
+        const prompt = `
+${pdfText ? `Tahlil sonuçları:\n${pdfText}\n` : ''}
+${userText ? `Kullanıcı mesajı:\n${userText}` : ''}
+Cevabını sağlık asistanı gibi açıkla.
+`;
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4',
@@ -56,5 +63,6 @@ router.post('/upload', async (req, res) => {
         res.status(500).json({ error: 'Sunucu hatası' });
     }
 });
+
 
 module.exports = router;
