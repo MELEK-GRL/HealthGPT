@@ -3,14 +3,17 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  ScrollView,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
+import LoginCard from '../../components/card/AuthCard';
+
 
 const Register = () => {
   const navigation = useNavigation();
@@ -57,7 +60,7 @@ const Register = () => {
       flex: 1,
       backgroundColor: '#f9fafd',
       justifyContent: 'center',
-      padding: 24 * w1px,
+
     },
     title: {
       fontSize: 26 * fs1px,
@@ -91,43 +94,49 @@ const Register = () => {
       textAlign: 'center',
       fontSize: 14 * fs1px,
     },
+    scrollContainer: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      paddingBottom: h1px * 40,
+    },
   });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Kayıt Ol</Text>
 
-      <TextInput
-        placeholder="İsim"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
 
-      <TextInput
-        placeholder="Email (opsiyonel)"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: '#f5f6ff' }}
 
-      <TextInput
-        placeholder="Şifre"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Kayıt Ol</Text>
-      </TouchableOpacity>
+          <LoginCard
+            titleName={'Kayıt Ol'}
+            firstPlaceholder="Kullanıcı Adı"
+            firstIconName={"person-outline"}
+            firstValue={name}
+            firstOnChangeText={setName}
+            secondIconName={"lock-closed-outline"}
+            secondPlaceholder="Email"
+            secondValue={email}
+            secondOnChangeText={setEmail}
+            thirdOnChangeText={setPassword}
+            thirdPlaceholder={'Şifre'}
+            thirdValue={password}
+            thirdIconName={"lock-closed-outline"}
+            onLoginPress={handleRegister}
+            onRegisterPress={() => navigation.navigate('Login' as never)}
+            text={'Giriş Yap'}
+          />
 
-      <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
-        <Text style={styles.link}>Zaten hesabın var mı? Giriş yap</Text>
-      </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+
     </View>
   );
 };

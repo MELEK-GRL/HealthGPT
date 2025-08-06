@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import {
   View,
-  TextInput,
-  Text,
-  TouchableOpacity,
   StyleSheet,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
+import colors from '../../theme/colors';
+import LoginCard from '../../components/card/AuthCard';
 
 const Login = ({ navigation }: any) => {
   const [name, setName] = useState('');
@@ -42,9 +43,9 @@ const Login = ({ navigation }: any) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f9fafd',
+      backgroundColor: colors.backgroundLight,
       justifyContent: 'center',
-      padding: 24 * w1px,
+
     },
     title: {
       fontSize: 26 * fs1px,
@@ -77,35 +78,44 @@ const Login = ({ navigation }: any) => {
       textAlign: 'center',
       fontSize: 14 * fs1px,
     },
+    scrollContainer: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      paddingBottom: h1px * 40,
+    },
   });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Giriş Yap</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: '#f5f6ff' }}
 
-      <TextInput
-        placeholder="Kullanıcı Adı"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-        autoCapitalize="none"
-      />
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <LoginCard
+            titleName={'Giriş Yap'}
+            firstPlaceholder="Kullanıcı Adı"
+            firstIconName={"person-outline"}
+            firstValue={name}
+            firstOnChangeText={setName}
+            secondIconName={"lock-closed-outline"}
+            secondPlaceholder="Şifre"
+            secondValue={password}
+            secondOnChangeText={setPassword}
+            // thirdIconName={"lock-closed-outline"}
+            onLoginPress={handleLogin}
+            onRegisterPress={() => navigation.navigate('Register')}
+            text={'Kayıt Ol'}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-      <TextInput
-        placeholder="Şifre"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Giriş Yap</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>Hesabın yok mu? Kayıt ol</Text>
-      </TouchableOpacity>
+
     </View>
   );
 };

@@ -26,6 +26,53 @@ const User = () => {
   const navigation = useNavigation<NavigationProp>();
   const { setIsLoggedIn } = useAppContext();
   const { w1px, h1px, fs1px } = useResponsive();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.backgroundLight,
+      padding: fs1px * 24,
+      justifyContent: 'center',
+    },
+    center: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      fontSize: fs1px * 16,
+      color: '#666',
+    },
+    header: {
+      fontWeight: '700',
+      marginBottom: 24,
+      textAlign: 'center',
+      color: '#333',
+    },
+    infoBox: {
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 20,
+      marginBottom: 32,
+      elevation: 2,
+    },
+    label: {
+      fontWeight: '600',
+      marginTop: 12,
+      color: '#444',
+    },
+    value: {
+      color: '#666',
+      marginBottom: 8,
+    },
+    logoutButton: {
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+    },
+    logoutText: {
+      color: '#fff',
+      fontWeight: '600',
+    },
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -56,6 +103,8 @@ const User = () => {
       </View>
     );
   }
+
+
 
   return (
     <View style={styles.container}>
@@ -92,50 +141,3 @@ const User = () => {
 
 export default User;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafd',
-    padding: 24,
-    justifyContent: 'center',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  header: {
-    fontWeight: '700',
-    marginBottom: 24,
-    textAlign: 'center',
-    color: '#333',
-  },
-  infoBox: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 32,
-    elevation: 2,
-  },
-  label: {
-    fontWeight: '600',
-    marginTop: 12,
-    color: '#444',
-  },
-  value: {
-    color: '#666',
-    marginBottom: 8,
-  },
-  logoutButton: {
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-});
