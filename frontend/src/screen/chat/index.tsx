@@ -19,6 +19,7 @@ import TextInputComponent from '../../components/Input/TextInputComponent';
 import { checkIfHealthRelated } from '../../utils/checkIfHealthRelated';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export type Message = {
   id: string;
@@ -199,20 +200,24 @@ console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2));
       keyboardVerticalOffset={90}
     >
       <View style={styles.headerContent}>
-        <TouchableOpacity
-          style={styles.headerMsg}
-          onPress={() => {
-            const welcomeMessage: Message = {
-              id: uuid.v4().toString(),
-              text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-              sender: 'ai',
-            };
-            setMessages([welcomeMessage]);
-            setCurrentConversationId(null);
-          }}
-        >
-          <Text style={styles.headerMsgText}>Yeni Sohbet</Text>
-        </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.headerNewChatButton}
+  onPress={() => {
+    const welcomeMessage: Message = {
+      id: uuid.v4().toString(),
+      text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+      sender: 'ai',
+    };
+    setMessages([welcomeMessage]);
+    setCurrentConversationId(null);
+  }}
+>
+  <View style={styles.newChatContent}>
+    <Icon name="chatbubble-ellipses-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+    <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+  </View>
+</TouchableOpacity>
 
         <View style={styles.header}>
           <Text style={styles.headerText}>{userName}</Text>
@@ -297,6 +302,27 @@ export const useResponsiveStyles = () => {
       fontSize: 16 * fs1px,
       color: '#333',
     },
+    headerNewChatButton: {
+  backgroundColor: '#4B7BE5',
+  paddingVertical: 8 * h1px,
+  paddingHorizontal: 14 * w1px,
+  borderRadius: 20 * fs1px,
+  shadowColor: '#000',
+  shadowOpacity: 0.1,
+  shadowOffset: { width: 0, height: 2 },
+  shadowRadius: 3,
+  elevation: 4,
+},
+newChatContent: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+headerNewChatText: {
+  fontSize: 15 * fs1px,
+  fontWeight: '600',
+  color: '#fff',
+},
+
   });
 };
 
