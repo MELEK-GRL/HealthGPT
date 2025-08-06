@@ -8,6 +8,7 @@ import {
   Platform,
   ListRenderItemInfo,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
@@ -35,156 +36,144 @@ const Chat: React.FC = () => {
   const route = useRoute<ChatRouteProp>();
   const conversationId = route.params?.conversationId;
   const styles = useResponsiveStyles();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [selectedPdf, setSelectedPdf] = useState<{ name: string; base64: string }>();
   const [userName, setUserName] = useState('');
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId || null);
 
-  // Kullanıcı bilgisini çek
+useEffect(() => {
+  const fetchConversationMessages = async () => {
+    if (!conversationId) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/conversations/detail/${conversationId}`);
+      const data = await response.json();
+
+      if (data && data.messages) {
+        const formattedMessages = data.messages.map((m: any, index: number) => ({
+          id: index.toString(),
+          text: m.text,
+          sender: m.sender,
+        }));
+        setMessages(formattedMessages);
+      }
+    } catch (error) {
+      console.error('🛑 Konuşma mesajları alınamadı:', error);
+    }
+  };
+
+  fetchConversationMessages();
+}, [conversationId]);
+
+
   useEffect(() => {
     const fetchUser = async () => {
       const userStr = await AsyncStorage.getItem('user');
       if (userStr) {
         const user = JSON.parse(userStr);
-        console.log('👤 Kullanıcı:', userStr);
         setUserName(user.name);
       }
     };
     fetchUser();
   }, []);
 
-  // Eğer geçmiş konuşma varsa çek
   useEffect(() => {
- const fetchConversation = async () => {
-  if (!conversationId) return;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/conversations/detail/${conversationId}`);
-    const text = await response.text(); 
-    const data = JSON.parse(text);
-    const restored = data.messages.map((msg: any, index: number) => ({
-      id: uuid.v4().toString(),
-      text: msg.text,
-      sender: msg.sender,
-    }));
-
-    setMessages(restored);
-  } catch (err) {
-    console.error( err);
-  }
-};
-
-
-    fetchConversation();
-  }, [conversationId]);
-
-  const sendMessage = async () => {
-     console.warn('--->sendMessage çalıştı');
-    const hasText = inputText.trim() !== '';
-    const hasPdf = !!selectedPdf;
-
-    if (!hasText && !hasPdf) return;
-
-    const userMessage: Message = {
-      id: uuid.v4().toString(),
-      text: hasText ? inputText.trim() : `[${selectedPdf?.name} yüklendi]`,
-      sender: 'user',
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-
-    if (hasText) {
-      const isRelevant = await checkIfHealthRelated(inputText.trim());
-      if (!isRelevant) {
-        const warning: Message = {
-          id: uuid.v4().toString(),
-          text: '🤖 Üzgünüm, yalnızca sağlıkla ilgili konularda yardımcı olabilirim.',
-          sender: 'ai',
-        };
-        setMessages(prev => [...prev, warning]);
-        setSelectedPdf(undefined);
-        return;
-      }
-    }
-
-    const isPdfOnly = hasPdf && !hasText;
-    const endpoint = `${API_BASE_URL}/${isPdfOnly ? 'upload' : 'message'}`;
- console.warn('--->endpoint ',JSON.stringify(endpoint,null));
-    const payload = isPdfOnly
-      ? {
-          fileName: selectedPdf!.name,
-          fileBase64: selectedPdf!.base64,
-        }
-      : {
-          message: hasPdf
-            ? `${inputText.trim()}\n\n[${selectedPdf?.name} yüklendi]`
-            : inputText.trim(),
-        };
-
-    if (!isPdfOnly && !payload.message) {
-      console.warn('🚫 message değeri boş, API çağrılmayacak.');
-      return;
-    }
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
- console.warn('--->result ',JSON.stringify(result,null));
-      const aiMessage: Message = {
+    if (!conversationId) {
+      const welcomeMessage: Message = {
         id: uuid.v4().toString(),
-        text: result.answer || 'Cevap alınamadı.',
+        text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
         sender: 'ai',
       };
-
-      const updatedMessages = [...messages, userMessage, aiMessage];
-      setMessages(updatedMessages);
-      setSelectedPdf(undefined);
-
-      const userStr = await AsyncStorage.getItem('user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-
-        // 🔁 Eğer mevcut conversation varsa güncelle, yoksa oluştur
-        if (currentConversationId) {
-          await fetch(`${API_BASE_URL}/conversations/${currentConversationId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              messages: updatedMessages.map(m => ({
-                text: m.text,
-                sender: m.sender,
-              })),
-            }),
-          });
-        } else {
-          const createRes = await fetch(`${API_BASE_URL}/conversations`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: user._id,
-              messages: updatedMessages.map(m => ({
-                text: m.text,
-                sender: m.sender,
-              })),
-            }),
-          });
-
-          const newConv = await createRes.json();
-          console.log('--->newConv',JSON.stringify(newConv,null,2))
-          setCurrentConversationId(newConv._id);
-        }
-      }
-    } catch (error: any) {
-      console.error('🛑 API Hatası:', error.message || error);
+      setMessages([welcomeMessage]);
+      setCurrentConversationId(null);
     }
+  }, [conversationId, userName]);
+
+
+const sendMessage = async () => {
+  const hasText = inputText.trim() !== '';
+  const hasPdf = !!selectedPdf;
+
+  if (!hasText && !hasPdf) return;
+
+  const userMessage: Message = {
+    id: uuid.v4().toString(),
+    text: hasText ? inputText.trim() : `[${selectedPdf?.name} yüklendi]`,
+    sender: 'user',
   };
+
+  setMessages(prev => [...prev, userMessage]);
+  setInputText('');
+
+  if (hasText) {
+    const isRelevant = await checkIfHealthRelated(inputText.trim());
+    if (!isRelevant) {
+      const warning: Message = {
+        id: uuid.v4().toString(),
+        text: '🤖 Üzgünüm, yalnızca sağlıkla ilgili konularda yardımcı olabilirim.',
+        sender: 'ai',
+      };
+      setMessages(prev => [...prev, warning]);
+      setSelectedPdf(undefined);
+      return;
+    }
+  }
+
+  const endpoint = `${API_BASE_URL}/upload`; // ➜ Artık PDF + Text için burası kullanılıyor
+  const payload = {
+    fileName: selectedPdf?.name,
+    fileBase64: selectedPdf?.base64,
+    text: inputText.trim(),
+  };
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+    const aiMessage: Message = {
+      id: uuid.v4().toString(),
+      text: result.answer || 'Cevap alınamadı.',
+      sender: 'ai',
+    };
+
+    const updatedMessages = [...messages, userMessage, aiMessage];
+    setMessages(updatedMessages);
+    setSelectedPdf(undefined);
+
+    const userStr = await AsyncStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      if (currentConversationId) {
+        await fetch(`${API_BASE_URL}/conversations/${currentConversationId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: updatedMessages.map(m => ({ text: m.text, sender: m.sender })),
+          }),
+        });
+      } else {
+        const createRes = await fetch(`${API_BASE_URL}/conversations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user._id,
+            messages: updatedMessages.map(m => ({ text: m.text, sender: m.sender })),
+          }),
+        });
+        const newConv = await createRes.json();
+        setCurrentConversationId(newConv._id);
+      }
+    }
+  } catch (error: any) {
+    console.error('🛑 API Hatası:', error.message || error);
+  }
+};
 
   const renderMessage = ({ item }: ListRenderItemInfo<Message>) => (
     <View
@@ -203,27 +192,27 @@ const Chat: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      
- <View style={styles.headerContent}>
-<TouchableOpacity
-  style={styles.headerMsg}
-  onPress={() => {
-    const welcomeMessage: Message = {
-      id: uuid.v4().toString(),
-      text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-      sender: 'ai',
-    };
-    setMessages([welcomeMessage]);
-    setCurrentConversationId(null);
-  }}
->
-  <Text style={styles.headerMsgText}>Yeni Sohbet</Text>
-</TouchableOpacity>
-  <View style={styles.header}>
-    <Text style={styles.headerText}>{userName}</Text>
-    {/* <View style={styles.userView} /> */}
-  </View>
-</View>
+      <View style={styles.headerContent}>
+        <TouchableOpacity
+          style={styles.headerMsg}
+          onPress={() => {
+            const welcomeMessage: Message = {
+              id: uuid.v4().toString(),
+              text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+              sender: 'ai',
+            };
+            setMessages([welcomeMessage]);
+            setCurrentConversationId(null);
+          }}
+        >
+          <Text style={styles.headerMsgText}>Yeni Sohbet</Text>
+        </TouchableOpacity>
+
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{userName}</Text>
+        </View>
+      </View>
+
       <FlatList
         data={messages}
         keyExtractor={item => item.id}
@@ -243,79 +232,12 @@ const Chat: React.FC = () => {
   );
 };
 
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: '#f9fafd' },
-//   headerContent:{
-// flexDirection:'row',
-// width:'100%',
-// justifyContent:'space-between',
-// alignItems:'center',
-//    padding: 12,
-//     backgroundColor: '#fff',
-//   },
-//   headerMsg:{
-//     backgroundColor:'gray',
-//      padding: 8,
-//      borderRadius:6,
-//   },
-//    headerMsgText: {
-//     marginRight: 8,
-//     fontSize: 16,
-//     fontWeight: '600',
-//     color: 'white',
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     justifyContent: 'flex-end',
-//     alignItems: 'center',
- 
-//   },
-//   headerText: {
-//     marginRight: 8,
-//     fontSize: 16,
-//     fontWeight: '600',
-//     color: '#333',
-//   },
-//   messagesList: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
-//   messageBubble: {
-//     padding: 12,
-//     borderRadius: 16,
-//     marginVertical: 6,
-//     maxWidth: '75%',
-//     shadowColor: '#000',
-//     shadowOpacity: 0.05,
-//     shadowOffset: { width: 0, height: 1 },
-//     shadowRadius: 2,
-//     elevation: 2,
-//   },
-//   userBubble: {
-//     backgroundColor: '#c7f0db',
-//     alignSelf: 'flex-end',
-//   },
-//   aiBubble: {
-//     backgroundColor: '#e0e7ff',
-//     alignSelf: 'flex-start',
-//   },
-//   messageText: { fontSize: 16, color: '#333' },
-//   userView: {
-//     borderRadius: 100,
-//     borderWidth: 2,
-//     borderColor: 'gray',
-//     height: 40,
-//     width: 40,
-//   },
-// });
 export const useResponsiveStyles = () => {
   const { w1px, h1px, fs1px } = useResponsive();
-
   return StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f9fafd',
-    },
+    container: { flex: 1, backgroundColor: '#f9fafd' },
     headerContent: {
       flexDirection: 'row',
-      width: '100%',
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 12 * h1px,
