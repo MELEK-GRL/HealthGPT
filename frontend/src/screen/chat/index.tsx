@@ -20,6 +20,7 @@ import { checkIfHealthRelated } from '../../utils/checkIfHealthRelated';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import Icon from 'react-native-vector-icons/Ionicons';
+import LoadingAI from '../splash/LoadingAI';
 
 export type Message = {
   id: string;
@@ -37,7 +38,7 @@ const Chat: React.FC = () => {
   const route = useRoute<ChatRouteProp>();
   const conversationId = route.params?.conversationId;
   const styles = useResponsiveStyles();
-
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [selectedPdf, setSelectedPdf] = useState<{ name: string; base64: string }>();
@@ -93,6 +94,8 @@ useEffect(() => {
   }, [conversationId, userName]);
 
 const sendMessage = async () => {
+  setIsLoading(true);
+
   const hasText = inputText.trim() !== '';
   const hasPdf = !!selectedPdf;
 
@@ -180,6 +183,8 @@ console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2));
   } catch (error: any) {
     console.error('🛑 API Hatası:', error.message || error);
   }
+  setIsLoading(false);
+
 };
 
   const renderMessage = ({ item }: ListRenderItemInfo<Message>) => (
@@ -223,6 +228,8 @@ console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2));
           <Text style={styles.headerText}>{userName}</Text>
         </View>
       </View>
+{isLoading?
+<LoadingAI/>:
 
       <FlatList
         data={messages}
@@ -231,6 +238,7 @@ console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2));
         contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={renderMessage}
       />
+}
 
       <TextInputComponent
         value={inputText}
