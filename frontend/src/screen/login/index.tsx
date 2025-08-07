@@ -11,11 +11,13 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
 import AuthCard from '../../components/card/AuthCard';
+import { useUserStore } from '../../store/userStore';
 
 const Login = ({ navigation }: any) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const { w1px, h1px, fs1px } = useResponsive();
+  const setUser = useUserStore(state => state.setUser); // ✅ setUser fonksiyonunu çekiyoruz
 
   const handleLogin = async () => {
     try {
@@ -30,6 +32,9 @@ const Login = ({ navigation }: any) => {
       if (res.ok) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
+
+        setUser(data.user); // ✅ store'a yazdık
+
         navigation.replace('MainLayout');
       } else {
         Alert.alert('Giriş Hatalı', data.message || 'Hatalı kullanıcı adı ya da şifre');
@@ -45,7 +50,6 @@ const Login = ({ navigation }: any) => {
       flex: 1,
       backgroundColor: colors.backgroundLight,
       justifyContent: 'center',
-
     },
     title: {
       fontSize: 26 * fs1px,
@@ -87,10 +91,7 @@ const Login = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: '#f5f6ff' }}
-
-      >
+      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f5f6ff' }}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
@@ -105,17 +106,12 @@ const Login = ({ navigation }: any) => {
             secondPlaceholder="Şifre"
             secondValue={password}
             secondOnChangeText={setPassword}
-            // thirdIconName={"lock-closed-outline"}
             onLoginPress={handleLogin}
             onRegisterPress={() => navigation.navigate('Register')}
             text={'Kayıt Ol'}
           />
         </ScrollView>
       </KeyboardAvoidingView>
-
-
-
-
     </View>
   );
 };

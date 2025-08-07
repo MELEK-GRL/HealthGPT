@@ -13,11 +13,13 @@ import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import AuthCard from '../../components/card/AuthCard';
-
+import colors from '../../theme/colors';
+import { useUserStore } from '../../store/userStore'; // ✅ store importu
 
 const Register = () => {
   const navigation = useNavigation();
   const { w1px, h1px, fs1px } = useResponsive();
+  const setUser = useUserStore(state => state.setUser); // ✅ store fonksiyonu
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,7 +32,6 @@ const Register = () => {
         password,
       };
 
-      // Eğer email girildiyse body'e ekle
       if (email.trim() !== '') {
         body.email = email.trim();
       }
@@ -42,9 +43,13 @@ const Register = () => {
       });
 
       const data = await res.json();
+
       if (res.ok) {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
+
+        setUser(data.user); // ✅ store'a kullanıcıyı yaz
+
         navigation.navigate('MainLayout' as never);
       } else {
         Alert.alert('Başarısız', data.message || 'Hata oluştu.');
@@ -58,41 +63,8 @@ const Register = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f9fafd',
+      backgroundColor: colors.backgroundLight,
       justifyContent: 'center',
-
-    },
-    title: {
-      fontSize: 26 * fs1px,
-      fontWeight: 'bold',
-      marginBottom: 28 * h1px,
-      textAlign: 'center',
-    },
-    input: {
-      backgroundColor: '#fff',
-      padding: 14 * h1px,
-      borderRadius: 10 * fs1px,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      marginBottom: 16 * h1px,
-      fontSize: 15 * fs1px,
-    },
-    button: {
-      backgroundColor: '#34C759',
-      paddingVertical: 16 * h1px,
-      borderRadius: 10 * fs1px,
-      alignItems: 'center',
-    },
-    buttonText: {
-      color: '#fff',
-      fontWeight: '600',
-      fontSize: 16 * fs1px,
-    },
-    link: {
-      marginTop: 20 * h1px,
-      color: '#007AFF',
-      textAlign: 'center',
-      fontSize: 14 * fs1px,
     },
     scrollContainer: {
       flexGrow: 1,
@@ -103,40 +75,31 @@ const Register = () => {
 
   return (
     <View style={styles.container}>
-
-
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: '#f5f6ff' }}
-
-      >
+      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f5f6ff' }}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-
           <AuthCard
             titleName={'Kayıt Ol'}
             firstPlaceholder="Kullanıcı Adı"
-            firstIconName={"person-outline"}
+            firstIconName="person-outline"
             firstValue={name}
             firstOnChangeText={setName}
-            secondIconName={"lock-closed-outline"}
-            secondPlaceholder="Email"
+            secondIconName="mail-outline"
+            secondPlaceholder="E-posta (opsiyonel)"
             secondValue={email}
             secondOnChangeText={setEmail}
-            thirdOnChangeText={setPassword}
-            thirdPlaceholder={'Şifre'}
+            thirdIconName="lock-closed-outline"
+            thirdPlaceholder="Şifre"
             thirdValue={password}
-            thirdIconName={"lock-closed-outline"}
+            thirdOnChangeText={setPassword}
             onLoginPress={handleRegister}
             onRegisterPress={() => navigation.navigate('Login' as never)}
             text={'Giriş Yap'}
           />
-
         </ScrollView>
       </KeyboardAvoidingView>
-
-
     </View>
   );
 };

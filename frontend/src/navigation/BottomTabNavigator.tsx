@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Chat, { useResponsiveStyles } from '../screen/chat';
+import Chat from '../screen/chat';
 import User from '../screen/user/User';
 import History from '../screen/history';
 import colors from '../theme/colors';

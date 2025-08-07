@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,22 +14,19 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
 import CenterModal from '../../components/modal/CenterModal';
 import colors from '../../theme/colors';
+import { useUserStore } from '../../store/userStore'; // ✅ store importu
 
 const avatarPlaceholder = 'https://cdn-icons-png.flaticon.com/512/9131/9131529.png';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainLayout'>;
 
-type UserType = {
-  name: string;
-  email?: string;
-};
-
 const User = () => {
-  const [user, setUser] = useState<UserType | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<NavigationProp>();
   const { setIsLoggedIn } = useAppContext();
   const { w1px, h1px, fs1px } = useResponsive();
+  const user = useUserStore(state => state.user); // ✅ store'dan kullanıcı çekiyoruz
+  const clearUser = useUserStore(state => state.clearUser); // ✅ store'dan temizleme fonksiyonu
 
   const styles = StyleSheet.create({
     container: {
@@ -68,15 +65,6 @@ const User = () => {
       color: colors.textLight,
       marginBottom: 20 * h1px,
     },
-    section: {
-      marginTop: 40 * h1px,
-    },
-    label: {
-      fontSize: 15 * fs1px,
-      fontWeight: '600',
-      color: '#444',
-      marginBottom: 6 * h1px,
-    },
     logoutButton: {
       marginTop: 32 * h1px,
       backgroundColor: colors.backgroundPruple,
@@ -106,19 +94,10 @@ const User = () => {
     },
   });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await AsyncStorage.getItem('user');
-      if (userData) {
-        setUser(JSON.parse(userData));
-      }
-    };
-    fetchUser();
-  }, []);
-
   const confirmLogout = async () => {
     try {
       await AsyncStorage.multiRemove(['token', 'user']);
+      clearUser(); // ✅ store'u sıfırla
       setIsLoggedIn(false);
       setModalVisible(false);
       navigation.replace('Auth');

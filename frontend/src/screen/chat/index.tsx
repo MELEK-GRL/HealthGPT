@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,7 @@ import {
   Platform,
   ListRenderItemInfo,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -23,6 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import LoadingAI from '../splash/LoadingAI';
 import colors from '../../theme/colors';
 import LinearGradient from 'react-native-linear-gradient';
+import { useUserStore } from '../../store/userStore';
 
 export type Message = {
   id: string;
@@ -44,9 +43,10 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [selectedPdf, setSelectedPdf] = useState<{ name: string; base64: string }>();
-  const [userName, setUserName] = useState('');
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId || null);
   const { w1px, h1px, fs1px } = useResponsive();
+  const { user } = useUserStore();
+  const flatListRef = useRef<FlatList>(null);
   useEffect(() => {
     const fetchConversationMessages = async () => {
       if (!conversationId) return;
@@ -71,30 +71,20 @@ const Chat: React.FC = () => {
     fetchConversationMessages();
   }, [conversationId]);
 
-
   useEffect(() => {
-    const fetchUser = async () => {
-      const userStr = await AsyncStorage.getItem('user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        setUserName(user.name);
-      }
-    };
-    fetchUser();
-  }, []);
-
-  useEffect(() => {
-    if (!conversationId) {
+    if (!conversationId && user?.name) {
       const welcomeMessage: Message = {
         id: uuid.v4().toString(),
-        text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+        text: `👨‍⚕️ Merhaba ${user.name}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
         sender: 'ai',
       };
       setMessages([welcomeMessage]);
       setCurrentConversationId(null);
     }
-  }, [conversationId, userName]);
-
+  }, [conversationId, user]);
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToEnd({ animated: true });
+  };
   const sendMessage = async () => {
     setIsLoading(true);
 
@@ -111,7 +101,7 @@ const Chat: React.FC = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
-
+    scrollToBottom();
     if (hasText) {
       const isRelevant = await checkIfHealthRelated(inputText.trim());
       if (!isRelevant) {
@@ -122,22 +112,19 @@ const Chat: React.FC = () => {
         };
         setMessages(prev => [...prev, warning]);
         setSelectedPdf(undefined);
+        setIsLoading(false);
         return;
       }
     }
 
     const endpoint = `${API_BASE_URL}/upload`;
-
-    // ✅ Dinamik payload
     const payload: Record<string, string> = {};
-    if (hasText) {
-      payload.text = inputText.trim();
-    }
+    if (hasText) payload.text = inputText.trim();
     if (hasPdf && selectedPdf?.name && selectedPdf?.base64) {
       payload.fileName = selectedPdf.name;
       payload.fileBase64 = selectedPdf.base64;
     }
-    console.log('📤 Gönderilen payload:', JSON.stringify(payload, null, 2));
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -146,7 +133,6 @@ const Chat: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log('--->result', JSON.stringify(result, null, 2));
 
       const aiMessage: Message = {
         id: uuid.v4().toString(),
@@ -158,16 +144,12 @@ const Chat: React.FC = () => {
       setMessages(updatedMessages);
       setSelectedPdf(undefined);
 
-      const userStr = await AsyncStorage.getItem('user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
+      if (user?._id) {
         if (currentConversationId) {
           await fetch(`${API_BASE_URL}/conversations/${currentConversationId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              messages: updatedMessages.map(m => ({ text: m.text, sender: m.sender })),
-            }),
+            body: JSON.stringify({ messages: updatedMessages.map(m => ({ text: m.text, sender: m.sender })) }),
           });
         } else {
           const createRes = await fetch(`${API_BASE_URL}/conversations`, {
@@ -186,7 +168,6 @@ const Chat: React.FC = () => {
       console.error('🛑 API Hatası:', error.message || error);
     }
     setIsLoading(false);
-
   };
 
   const renderMessage = ({ item }: ListRenderItemInfo<Message>) => (
@@ -206,86 +187,56 @@ const Chat: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <View>
-        {/* <View style={styles.headerContent}>
-
-          <TouchableOpacity
-            style={styles.headerNewChatButton}
-            onPress={() => {
-              const welcomeMessage: Message = {
-                id: uuid.v4().toString(),
-                text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-                sender: 'ai',
-              };
-              setMessages([welcomeMessage]);
-              setCurrentConversationId(null);
-            }}
-          >
-            <View style={styles.newChatContent}>
-              <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
-              <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={styles.header}>
-            <Icon
-              name="person-circle-outline"
-              size={24 * fs1px}
-              color={colors.textWhite}
-              style={{ marginRight: 6 * w1px }}
-            />
-            <Text style={styles.headerText}>{userName}</Text>
-          </View>
-
-        </View> */}
+      <View >
         <LinearGradient
           colors={colors.backgroundPrupleGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.headerContent}
         >
-          <TouchableOpacity
-            style={styles.headerNewChatButton}
-            onPress={() => {
-              const welcomeMessage: Message = {
-                id: uuid.v4().toString(),
-                text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-                sender: 'ai',
-              };
-              setMessages([welcomeMessage]);
-              setCurrentConversationId(null);
-            }}
-          >
-            <View style={styles.newChatContent}>
-              <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
-              <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+          <View style={styles.viewContainer}>
+            <TouchableOpacity
+              style={styles.headerNewChatButton}
+              onPress={() => {
+                if (user?.name) {
+                  const welcomeMessage: Message = {
+                    id: uuid.v4().toString(),
+                    text: `👨‍⚕️ Merhaba ${user.name}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+                    sender: 'ai',
+                  };
+                  setMessages([welcomeMessage]);
+                  setCurrentConversationId(null);
+                }
+              }}
+            >
+              <View style={styles.newChatContent}>
+                <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
+                <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+              </View>
+            </TouchableOpacity>
+
+            <View style={styles.header}>
+              <Icon name="person-circle-outline" size={24 * fs1px} color={colors.textWhite} style={{ marginRight: 6 * w1px }} />
+              <Text style={styles.headerText}>{user?.name}</Text>
             </View>
-          </TouchableOpacity>
-
-          <View style={styles.header}>
-            <Icon
-              name="person-circle-outline"
-              size={24 * fs1px}
-              color={colors.textWhite}
-              style={{ marginRight: 6 * w1px }}
-            />
-            <Text style={styles.headerText}>{userName}</Text>
           </View>
+
         </LinearGradient>
-
       </View>
-      <View style={styles.listContainer} >
-        {isLoading ?
-          <LoadingAI /> :
 
+      <View style={styles.listContainer}>
+        {isLoading ? (
+          <LoadingAI />
+        ) : (
           <FlatList
             data={messages}
             keyExtractor={item => item.id}
             style={styles.messagesList}
             contentContainerStyle={{ paddingBottom: 20 }}
             renderItem={renderMessage}
+            showsVerticalScrollIndicator={false}
           />
-        }
+        )}
       </View>
 
       <TextInputComponent
@@ -299,28 +250,25 @@ const Chat: React.FC = () => {
   );
 };
 
-export const useResponsiveStyles = () => {
+const useResponsiveStyles = () => {
   const { w1px, h1px, fs1px } = useResponsive();
   return StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.backgroundLight, },
+    container: { flex: 1, backgroundColor: colors.backgroundLight },
+    viewContainer: {
+      marginHorizontal: w1px * 12,
+      flex: 1,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
     headerContent: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       height: h1px * 120,
-      // backgroundColor: colors.backgroundPruple,
       borderBottomLeftRadius: fs1px * 8,
       borderBottomRightRadius: fs1px * 8,
-    },
-    headerMsg: {
-      backgroundColor: 'gray',
-      padding: 8 * h1px,
-      borderRadius: 6 * fs1px,
-    },
-    headerMsgText: {
-      fontSize: 16 * fs1px,
-      fontWeight: '600',
-      color: 'white',
+
     },
     header: {
       flexDirection: 'row',
@@ -334,9 +282,8 @@ export const useResponsiveStyles = () => {
       color: colors.textWhite,
     },
     listContainer: {
-      flex: 1, backgroundColor: colors.backgroundLight,
-      // borderTopLeftRadius: fs1px * 8,
-      // borderTopRightRadius: fs1px * 8
+      flex: 1,
+      backgroundColor: colors.backgroundLight,
     },
     messagesList: {
       flex: 1,
@@ -386,7 +333,6 @@ export const useResponsiveStyles = () => {
       fontWeight: '600',
       color: colors.textWhite,
     },
-
   });
 };
 

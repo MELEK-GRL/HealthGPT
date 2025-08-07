@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
+import { useUserStore } from '../../store/userStore'; // ✅ kullanıcıyı store'dan çek
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -33,6 +33,7 @@ const History = () => {
   const navigation = useNavigation<HistoryScreenNavigationProp>();
   const { w1px, h1px, fs1px } = useResponsive();
   const isFocused = useIsFocused();
+  const user = useUserStore(state => state.user); // ✅ kullanıcıyı store'dan al
 
   useEffect(() => {
     if (isFocused) {
@@ -40,19 +41,11 @@ const History = () => {
     }
   }, [isFocused]);
 
-  useEffect(() => {
-    fetchConversations();
-  }, []);
-
   const fetchConversations = async () => {
-    const userStr = await AsyncStorage.getItem('user');
-    if (!userStr) return;
-    const user = JSON.parse(userStr);
-    console.log('🧠 Parsed user:', JSON.stringify(user, null, 2));
+    if (!user?._id) return;
     try {
       const response = await fetch(`${API_BASE_URL}/conversations/${user._id}`);
       const data = await response.json();
-      console.log('📦 Gelen veri:', data);
       setConversations(data);
     } catch (error) {
       console.error('🛑 Konuşmalar alınamadı:', error);
@@ -101,7 +94,6 @@ const History = () => {
       shadowOffset: { width: 0, height: 2 },
       shadowRadius: 8,
       elevation: 5,
-
     },
     text: {
       fontSize: 16 * fs1px,
