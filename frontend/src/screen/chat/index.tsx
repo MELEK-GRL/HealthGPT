@@ -265,10 +265,9 @@ const useResponsiveStyles = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: h1px * 120,
+      height: h1px * 80,
       borderBottomLeftRadius: fs1px * 8,
       borderBottomRightRadius: fs1px * 8,
-
     },
     header: {
       flexDirection: 'row',

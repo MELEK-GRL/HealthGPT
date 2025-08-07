@@ -56,6 +56,14 @@ const colors = {
         '#6A61DC', // tekrar derinleşme
         '#584FC0', // en koyu ton
     ] as [string, string, string, string, string, string],
+    // backgroundPrupleGradient: [
+    //     '#3E39AD', // daha koyu mor
+    //     '#4A44BD', // geçiş tonu
+    //     '#574FBF', // stabil mor (koyulaşmış)
+    //     '#6158C8', // ana mor rengin bir tık koyusu
+    //     '#544CB4', // derinleşme tonu
+    //     '#473DA3', // en koyu ton (önceki 584FC0'a göre daha karanlık)
+    // ] as [string, string, string, string, string, string],
 
 
 
