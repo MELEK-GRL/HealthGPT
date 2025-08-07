@@ -21,19 +21,20 @@ const Splash = ({ navigation }: Props) => {
     },
     button: {
       backgroundColor: colors.backgroundPruple,
-      paddingVertical: h1px * 6,
-      paddingHorizontal: w1px * 40,
-      borderRadius: fs1px * 10,
-      marginTop: 40 * h1px,
+      paddingVertical: 12 * h1px,
+      paddingHorizontal: 36 * w1px,
+      borderRadius: 10 * fs1px,
       flexDirection: 'row',
-      alignItems: 'center'
+      alignItems: 'center',
+      alignSelf: 'center',
+      marginVertical: 24 * h1px,
     },
     buttonText: {
-      color: colors.textWhite,
-      fontWeight: '600',
+      color: '#fff',
+      fontWeight: 'bold',
       fontSize: 16 * fs1px,
-      marginRight: 12 * w1px
-    }
+      marginRight: 8 * w1px,
+    },
   });
 
 

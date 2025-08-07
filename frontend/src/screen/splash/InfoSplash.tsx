@@ -115,10 +115,13 @@ const InfoSplash = ({ navigation }: Props) => {
                     kuruluşuna başvurun.
                 </Text>
 
-                {/* Devam Butonu */}
-                <TouchableOpacity style={styles.button} onPress={handleContinue}>
-                    <Text style={styles.buttonText}>İleri</Text>
-                    <Icon name="arrow-forward-outline" size={22 * fs1px} color={colors.textWhite} />
+
+                <TouchableOpacity
+                    style={[styles.button]}
+                    onPress={handleContinue}
+                >
+                    <Text style={[styles.buttonText]}>İleri</Text>
+                    <Icon name="arrow-forward-outline" size={24 * fs1px} color={colors.textWhite} />
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
