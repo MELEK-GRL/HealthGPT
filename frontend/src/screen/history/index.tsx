@@ -82,11 +82,10 @@ const History = () => {
       padding: 16 * w1px,
     },
     title: {
-      fontSize: 22 * fs1px,
-      fontWeight: 'bold',
+      fontSize: 20 * fs1px,
+      fontWeight: '500',
       marginBottom: 16 * h1px,
       color: colors.backgroundPruple,
-      textAlign: 'center',
     },
     item: {
       backgroundColor: '#ffffff',
@@ -143,7 +142,7 @@ const History = () => {
       <TopBar />
       <View style={styles.container}>
 
-        <Text style={styles.title}>Geçmiş Konuşmalar</Text>
+        <Text style={styles.title}>Konuşma Geçmişi</Text>
         <FlatList
           data={conversations}
           keyExtractor={(item) => item._id}
