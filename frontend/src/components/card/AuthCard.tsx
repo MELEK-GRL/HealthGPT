@@ -74,7 +74,8 @@ const AuthCard: React.FC<Props> = ({
             shadowRadius: w1px * 8,
             elevation: 3,
             alignItems: 'center',
-
+            borderWidth: 1,
+            borderColor: colors.backgroundPrupleSoft
         },
         title: {
             fontSize: fs1px * 20,

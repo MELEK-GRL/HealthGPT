@@ -5,6 +5,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
+  Image,
+  SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@env';
@@ -50,7 +52,14 @@ const Login = ({ navigation }: any) => {
       flex: 1,
       backgroundColor: colors.backgroundLight,
       justifyContent: 'center',
+
     },
+    safeAreaView: {
+      flex: 1,
+      justifyContent: 'center',
+
+    },
+
     title: {
       fontSize: 26 * fs1px,
       fontWeight: 'bold',
@@ -83,35 +92,53 @@ const Login = ({ navigation }: any) => {
       fontSize: 14 * fs1px,
     },
     scrollContainer: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      paddingBottom: h1px * 40,
+      flex: 1,
     },
+    avatar: {
+      width: 80 * w1px,
+      height: 80 * w1px,
+      borderRadius: 90,
+      borderWidth: 1,
+      borderColor: colors.backgroundPruple,
+    },
+    avatarContainer: {
+      alignItems: 'center',
+      width: '100%',
+      marginBottom: h1px * 40
+    }
   });
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f5f6ff' }}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <AuthCard
-            titleName={'Giriş Yap'}
-            firstPlaceholder="Kullanıcı Adı"
-            firstIconName={"person-outline"}
-            firstValue={name}
-            firstOnChangeText={setName}
-            secondIconName={"lock-closed-outline"}
-            secondPlaceholder="Şifre"
-            secondValue={password}
-            secondOnChangeText={setPassword}
-            onLoginPress={handleLogin}
-            onRegisterPress={() => navigation.navigate('Register')}
-            text={'Kayıt Ol'}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <SafeAreaView style={styles.safeAreaView}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
+          <View style={{ flex: 1, paddingVertical: h1px * 100 }}>
+            <View style={styles.avatarContainer}>
+              <Image source={require('../../assets/icons/historyIcon.png')} style={styles.avatar} />
+            </View>
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              keyboardShouldPersistTaps="handled"
+            >
+              <AuthCard
+                titleName={'Giriş Yap'}
+                firstPlaceholder="Kullanıcı Adı"
+                firstIconName={"person-outline"}
+                firstValue={name}
+                firstOnChangeText={setName}
+                secondIconName={"lock-closed-outline"}
+                secondPlaceholder="Şifre"
+                secondValue={password}
+                secondOnChangeText={setPassword}
+                onLoginPress={handleLogin}
+                onRegisterPress={() => navigation.navigate('Register')}
+                text={'Kayıt Ol'}
+              />
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+
+      </SafeAreaView>
     </View>
   );
 };
