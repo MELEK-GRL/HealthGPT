@@ -7,10 +7,34 @@ import { useResponsive } from '../../utils/responsive';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../../theme/colors';
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 const Splash = ({ navigation }: Props) => {
   const { w1px, h1px, fs1px } = useResponsive();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    button: {
+      backgroundColor: colors.backgroundPruple,
+      paddingVertical: h1px * 6,
+      paddingHorizontal: w1px * 40,
+      borderRadius: fs1px * 10,
+      marginTop: 40 * h1px,
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    buttonText: {
+      color: colors.textWhite,
+      fontWeight: '600',
+      fontSize: 16 * fs1px,
+      marginRight: 12 * w1px
+    }
+  });
 
 
   const handleContinue = async () => {
@@ -38,8 +62,12 @@ const Splash = ({ navigation }: Props) => {
         style={{ width: 300 * w1px, height: 300 * h1px }}
       />
 
-      <TouchableOpacity style={[styles.button, { marginTop: 40 * h1px }]} onPress={handleContinue}>
-        <Text style={[styles.buttonText, { fontSize: 16 * fs1px }]}>Devam Et</Text>
+      <TouchableOpacity
+        style={[styles.button]}
+        onPress={handleContinue}
+      >
+        <Text style={[styles.buttonText]}>İleri</Text>
+        <Icon name="arrow-forward-outline" size={24 * fs1px} color={colors.textWhite} />
       </TouchableOpacity>
     </View>
   );
@@ -47,21 +75,3 @@ const Splash = ({ navigation }: Props) => {
 
 export default Splash;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: colors.backgroundPruple,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: colors.textWhite,
-    fontWeight: '600',
-  },
-});
