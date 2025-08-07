@@ -13,6 +13,7 @@ import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
 import { useUserStore } from '../../store/userStore';
 import CenterModal from '../../components/modal/CenterModal';
+import TopBar from '../../components/TopBar/TopBar';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -72,6 +73,7 @@ const History = () => {
   };
 
   const styles = StyleSheet.create({
+    content: { flex: 1 },
     container: {
       flex: 1,
       backgroundColor: '#ffffff',
@@ -130,35 +132,39 @@ const History = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Geçmiş Konuşmalar</Text>
-      <FlatList
-        data={conversations}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item, index }) => (
-          <View style={styles.item}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => handlePress(item._id)}>
-              <Text style={styles.text}>Sohbet {index + 1}</Text>
-              <Text style={styles.date}>
-                {new Date(item.createdAt).toLocaleString('tr-TR')}
-              </Text>
-            </TouchableOpacity>
+    <View style={styles.content}>
+      <TopBar />
+      <View style={styles.container}>
 
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.deleteButton}>
-              <Text style={styles.deleteText}>Sil</Text>
-            </TouchableOpacity>
-            <CenterModal
-              visible={modalVisible}
-              onClose={onClose}
-              onConfirm={() => handleDelete(item._id)}
-              message="Silmek İstediğinize emin misiniz??"
-            />
-          </View>
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>Henüz konuşma yok.</Text>}
-      />
+        <Text style={styles.title}>Geçmiş Konuşmalar</Text>
+        <FlatList
+          data={conversations}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item, index }) => (
+            <View style={styles.item}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => handlePress(item._id)}>
+                <Text style={styles.text}>Sohbet {index + 1}</Text>
+                <Text style={styles.date}>
+                  {new Date(item.createdAt).toLocaleString('tr-TR')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.deleteButton}>
+                <Text style={styles.deleteText}>Sil</Text>
+              </TouchableOpacity>
+              <CenterModal
+                visible={modalVisible}
+                onClose={onClose}
+                onConfirm={() => handleDelete(item._id)}
+                message="Silmek İstediğinize emin misiniz??"
+              />
+            </View>
+          )}
+          ListEmptyComponent={<Text style={styles.emptyText}>Henüz konuşma yok.</Text>}
+        />
 
 
+      </View>
     </View>
   );
 };

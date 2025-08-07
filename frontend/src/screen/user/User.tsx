@@ -15,6 +15,7 @@ import { RootStackParamList } from '../../navigation/NavigationTypes';
 import CenterModal from '../../components/modal/CenterModal';
 import colors from '../../theme/colors';
 import { useUserStore } from '../../store/userStore';
+import TopBar from '../../components/TopBar/TopBar';
 
 const avatarPlaceholder = 'https://cdn-icons-png.flaticon.com/512/9131/9131529.png';
 
@@ -29,6 +30,7 @@ const User = () => {
   const clearUser = useUserStore(state => state.clearUser);
 
   const styles = StyleSheet.create({
+    content: { flex: 1 },
     container: {
       flex: 1,
       backgroundColor: colors.backgroundLight,
@@ -115,26 +117,29 @@ const User = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Image source={{ uri: avatarPlaceholder }} style={styles.avatar} />
-        <Text style={styles.name}>{user.name}</Text>
-        {user.email && <Text style={styles.email}>{user.email}</Text>}
+    <View style={styles.content}>
+      <TopBar />
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Image source={{ uri: avatarPlaceholder }} style={styles.avatar} />
+          <Text style={styles.name}>{user.name}</Text>
+          {user.email && <Text style={styles.email}>{user.email}</Text>}
+        </View>
+
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.logoutText}>Çıkış Yap</Text>
+        </TouchableOpacity>
+
+        <CenterModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onConfirm={confirmLogout}
+          message="Oturumu kapatmak istiyor musun?"
+        />
       </View>
-
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.logoutText}>Çıkış Yap</Text>
-      </TouchableOpacity>
-
-      <CenterModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onConfirm={confirmLogout}
-        message="Oturumu kapatmak istiyor musun?"
-      />
     </View>
   );
 };

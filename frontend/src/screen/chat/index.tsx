@@ -22,6 +22,7 @@ import LoadingAI from '../splash/LoadingAI';
 import colors from '../../theme/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import { useUserStore } from '../../store/userStore';
+import TopBar from '../../components/TopBar/TopBar';
 
 export type Message = {
   id: string;
@@ -188,40 +189,39 @@ const Chat: React.FC = () => {
       keyboardVerticalOffset={90}
     >
       <View >
-        <LinearGradient
-          colors={colors.backgroundPrupleGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.headerContent}
-        >
-          <View style={styles.viewContainer}>
-            <TouchableOpacity
-              style={styles.headerNewChatButton}
-              onPress={() => {
-                if (user?.name) {
-                  const welcomeMessage: Message = {
-                    id: uuid.v4().toString(),
-                    text: `👨‍⚕️ Merhaba ${user.name}! Ben yapay zekâ destekli sağlık asistanınızım. Size nasıl yardımcı olabilirim?`,
-                    sender: 'ai',
-                  };
-                  setMessages([welcomeMessage]);
-                  setCurrentConversationId(null);
-                }
-              }}
-            >
-              <View style={styles.newChatContent}>
-                <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
-                <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
-              </View>
-            </TouchableOpacity>
 
-            <View style={styles.header}>
-              <Icon name="person-circle-outline" size={24 * fs1px} color={colors.textWhite} style={{ marginRight: 6 * w1px }} />
-              <Text style={styles.headerText}>{user?.name}</Text>
+        {/* <TopBar>
+          <TouchableOpacity
+            style={styles.headerNewChatButton}
+            onPress={() => {
+              if (user?.name) {
+                const welcomeMessage: Message = {
+                  id: uuid.v4().toString(),
+                  text: `👨‍⚕️ Merhaba ${user.name}! Ben yapay zekâ destekli sağlık asistanınızım. Size nasıl yardımcı olabilirim?`,
+                  sender: 'ai',
+                };
+                setMessages([welcomeMessage]);
+                setCurrentConversationId(null);
+              }
+            }}
+          >
+            <View style={styles.newChatContent}>
+              <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
+              <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
-        </LinearGradient>
+          <View style={styles.header}>
+            <Icon name="person-circle-outline" size={24 * fs1px} color={colors.textWhite} style={{ marginRight: 6 * w1px }} />
+            <Text style={styles.headerText}>{user?.name}</Text>
+          </View>
+        </TopBar> */}
+        <TopBar
+        // user={user}
+        // setMessages={setMessages}
+        // setCurrentConversationId={setCurrentConversationId}
+        />
+
       </View>
 
       <View style={styles.listContainer}>
