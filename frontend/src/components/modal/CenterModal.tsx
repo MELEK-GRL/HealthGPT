@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Dimensions,
 } from 'react-native';
+import colors from '../../theme/colors';
 
 type Props = {
     visible: boolean;
@@ -71,20 +72,20 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 8,
-        backgroundColor: '#ccc',
+        backgroundColor: colors.buttonGray,
     },
     confirmButton: {
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 8,
-        backgroundColor: '#ff3b30',
+        backgroundColor: colors.buttonPruple,
     },
     cancelText: {
-        color: '#333',
+        color: colors.textWhite,
         fontWeight: '600',
     },
     confirmText: {
-        color: '#fff',
+        color: colors.textWhite,
         fontWeight: '600',
     },
 });

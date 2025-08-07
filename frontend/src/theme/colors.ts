@@ -13,6 +13,7 @@ const colors = {
     backgroundPruple: "#4941B3",
     backgroundPrupleDark: '#3A3496',
     buttonPruple: "#4941B3",
+    buttonGray: "#A6A6A6",
     textPruple: "7067F0",
     textGray: "#333",
     textWhite: "#ffffff",
