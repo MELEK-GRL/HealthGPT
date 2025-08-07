@@ -13,14 +13,28 @@ import { RootStackParamList } from '../../navigation/NavigationTypes';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'InfoSplash'>;
 
 const InfoSplash = ({ navigation }: Props) => {
     const { w1px, h1px, fs1px } = useResponsive();
 
-    const handleContinue = () => {
-        navigation.replace('MainLayout');
+
+
+    const handleContinue = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+
+            if (token) {
+                navigation.replace('Auth');
+            } else {
+                navigation.replace('Auth');
+            }
+        } catch (error) {
+            console.error('Splash kontrol hatası:', error);
+            navigation.replace('Auth');
+        }
     };
 
     const styles = StyleSheet.create({
