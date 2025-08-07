@@ -45,7 +45,7 @@ const Splash = ({ navigation }: Props) => {
       if (token) {
         navigation.replace('InfoSplash');
       } else {
-        navigation.replace('Auth');
+        navigation.replace('InfoSplash');
       }
     } catch (error) {
       console.error('Splash kontrol hatası:', error);

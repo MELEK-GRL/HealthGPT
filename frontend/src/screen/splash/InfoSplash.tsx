@@ -45,21 +45,21 @@ const InfoSplash = ({ navigation }: Props) => {
         },
         lottieWrapper: {
             alignItems: 'center',
-            marginTop: 10 * h1px,
+            marginTop: 20 * h1px,
         },
         lottie: {
             width: 200 * w1px,
             height: 200 * h1px,
         },
         sectionTitle: {
-            fontSize: 20 * fs1px,
+            fontSize: 18 * fs1px,
             fontWeight: 'bold',
             color: colors.backgroundPruple,
             textAlign: 'center',
-            marginBottom: 12 * h1px,
+            marginBottom: 29 * h1px,
         },
         sectionText: {
-            fontSize: 15 * fs1px,
+            fontSize: 13 * fs1px,
             color: colors.textGray,
             lineHeight: 22 * h1px,
             textAlign: 'center',
@@ -76,7 +76,7 @@ const InfoSplash = ({ navigation }: Props) => {
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf: 'center',
-            marginVertical: 24 * h1px,
+            marginVertical: 30 * h1px,
         },
         buttonText: {
             color: '#fff',
