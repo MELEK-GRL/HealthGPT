@@ -42,7 +42,7 @@ const Splash = ({ navigation }: Props) => {
       const token = await AsyncStorage.getItem('token');
 
       if (token) {
-        navigation.replace('MainLayout');
+        navigation.replace('InfoSplash');
       } else {
         navigation.replace('Auth');
       }

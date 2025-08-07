@@ -75,7 +75,7 @@ const Chat: React.FC = () => {
     if (!conversationId && user?.name) {
       const welcomeMessage: Message = {
         id: uuid.v4().toString(),
-        text: `👨‍⚕️ Merhaba ${user.name}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+        text: `👨‍⚕️ Merhaba ${user.name}! Ben yapay zekâ destekli sağlık asistanınızım. Size nasıl yardımcı olabilirim?`,
         sender: 'ai',
       };
       setMessages([welcomeMessage]);
@@ -201,7 +201,7 @@ const Chat: React.FC = () => {
                 if (user?.name) {
                   const welcomeMessage: Message = {
                     id: uuid.v4().toString(),
-                    text: `👨‍⚕️ Merhaba ${user.name}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+                    text: `👨‍⚕️ Merhaba ${user.name}! Ben yapay zekâ destekli sağlık asistanınızım. Size nasıl yardımcı olabilirim?`,
                     sender: 'ai',
                   };
                   setMessages([welcomeMessage]);
