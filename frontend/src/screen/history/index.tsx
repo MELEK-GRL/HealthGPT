@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
-import { useUserStore } from '../../store/userStore'; // ✅ kullanıcıyı store'dan çek
+import { useUserStore } from '../../store/userStore';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -33,7 +33,7 @@ const History = () => {
   const navigation = useNavigation<HistoryScreenNavigationProp>();
   const { w1px, h1px, fs1px } = useResponsive();
   const isFocused = useIsFocused();
-  const user = useUserStore(state => state.user); // ✅ kullanıcıyı store'dan al
+  const user = useUserStore(state => state.user);
 
   useEffect(() => {
     if (isFocused) {

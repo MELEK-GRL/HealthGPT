@@ -302,11 +302,11 @@ const useResponsiveStyles = () => {
       elevation: 2,
     },
     userBubble: {
-      backgroundColor: '#c7f0db',
+      backgroundColor: colors.backgroundPinkSoft,
       alignSelf: 'flex-end',
     },
     aiBubble: {
-      backgroundColor: '#e0e7ff',
+      backgroundColor: colors.backgroundPrupleSoft,
       alignSelf: 'flex-start',
     },
     messageText: {

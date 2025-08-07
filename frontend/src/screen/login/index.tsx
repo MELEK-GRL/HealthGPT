@@ -17,7 +17,7 @@ const Login = ({ navigation }: any) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const { w1px, h1px, fs1px } = useResponsive();
-  const setUser = useUserStore(state => state.setUser); // ✅ setUser fonksiyonunu çekiyoruz
+  const setUser = useUserStore(state => state.setUser);
 
   const handleLogin = async () => {
     try {
@@ -33,7 +33,7 @@ const Login = ({ navigation }: any) => {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
 
-        setUser(data.user); // ✅ store'a yazdık
+        setUser(data.user);
 
         navigation.replace('MainLayout');
       } else {

@@ -14,7 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
 import CenterModal from '../../components/modal/CenterModal';
 import colors from '../../theme/colors';
-import { useUserStore } from '../../store/userStore'; // ✅ store importu
+import { useUserStore } from '../../store/userStore';
 
 const avatarPlaceholder = 'https://cdn-icons-png.flaticon.com/512/9131/9131529.png';
 
@@ -25,8 +25,8 @@ const User = () => {
   const navigation = useNavigation<NavigationProp>();
   const { setIsLoggedIn } = useAppContext();
   const { w1px, h1px, fs1px } = useResponsive();
-  const user = useUserStore(state => state.user); // ✅ store'dan kullanıcı çekiyoruz
-  const clearUser = useUserStore(state => state.clearUser); // ✅ store'dan temizleme fonksiyonu
+  const user = useUserStore(state => state.user);
+  const clearUser = useUserStore(state => state.clearUser);
 
   const styles = StyleSheet.create({
     container: {
@@ -97,7 +97,7 @@ const User = () => {
   const confirmLogout = async () => {
     try {
       await AsyncStorage.multiRemove(['token', 'user']);
-      clearUser(); // ✅ store'u sıfırla
+      clearUser();
       setIsLoggedIn(false);
       setModalVisible(false);
       navigation.replace('Auth');

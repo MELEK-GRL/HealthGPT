@@ -55,7 +55,6 @@ const TextInputComponent: React.FC<Props> = ({
   );
 };
 
-// 🔧 Responsive stil fonksiyonu
 const useResponsiveStyles = () => {
   const { w1px, h1px, fs1px } = useResponsive();
 
@@ -80,7 +79,6 @@ const useResponsiveStyles = () => {
       borderRadius: 25 * fs1px,
       paddingHorizontal: 15 * w1px,
       paddingVertical: 16 * h1px,
-      // marginRight: 8 * w1px,
       justifyContent: 'center'
     },
     input: {
@@ -92,12 +90,12 @@ const useResponsiveStyles = () => {
       backgroundColor: colors.buttonPruple,
       borderRadius: 25 * fs1px,
       padding: 10 * fs1px,
-      // marginLeft: 5 * w1px,
+
     },
 
   });
 
-  return { ...styles, fs1px }; // fs1px'yi dışarı aktarıyoruz çünkü Icon size'ında kullandık
+  return { ...styles, fs1px };
 };
 
 export default TextInputComponent;

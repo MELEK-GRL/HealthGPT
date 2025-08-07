@@ -1,4 +1,3 @@
-// src/screen/splashScreen/SplashScreen.tsx
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import LottieView from 'lottie-react-native';
@@ -13,17 +12,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 const Splash = ({ navigation }: Props) => {
   const { w1px, h1px, fs1px } = useResponsive();
 
-  // diğer importlar aynı
 
   const handleContinue = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
 
       if (token) {
-        // Giriş yapılmış → Ana sayfaya gönder
         navigation.replace('MainLayout');
       } else {
-        // Giriş yapılmamış → Auth (Login) ekranına yönlendir
         navigation.replace('Auth');
       }
     } catch (error) {

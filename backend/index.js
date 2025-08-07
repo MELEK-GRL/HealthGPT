@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 // ✅ Route dosyaları
 const authRoutes = require('./routes/auth');
-const uploadRoutes = require('./routes/upload'); // ❗️uploads değil!
+const uploadRoutes = require('./routes/upload');
 const checkRoute = require('./routes/check');
 const messageRoutes = require('./routes/message');
 const conversationRoutes = require('./routes/conversation');

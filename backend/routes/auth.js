@@ -4,12 +4,9 @@ const User = require('../models/User');
 
 const router = express.Router();
 
-// Kayıt
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
-
-        // Aynı kullanıcı adına sahip bir kullanıcı var mı?
         const existingUser = await User.findOne({ name });
         if (existingUser) {
             return res.status(400).json({ message: 'Bu kullanıcı adı zaten alınmış.' });
@@ -32,7 +29,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Giriş
 router.post('/login', async (req, res) => {
     try {
         const { name, password } = req.body;

@@ -11,7 +11,6 @@ const App = () => {
   const setDimensions = useDeviceStore(state => state.setDimensions);
   const appState = useRef(AppState.currentState);
 
-  // Ekran boyutlarını store'a yaz
   useEffect(() => {
     const updateDimensions = () => {
       const { width, height } = Dimensions.get('window');
@@ -24,7 +23,6 @@ const App = () => {
     return () => dimensionSub.remove();
   }, []);
 
-  // Uygulama arka plana alınırsa token ve user sil
   useEffect(() => {
     const handleAppStateChange = async (nextState: AppStateStatus) => {
       if (

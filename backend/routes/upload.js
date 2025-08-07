@@ -7,7 +7,6 @@ const OpenAI = require('openai');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Burayı kendi fonksiyonuna göre değiştir
 const isHealthRelated = (text) => {
     return text.toLowerCase().includes('kan') || text.toLowerCase().includes('tahlil');
 };
@@ -24,8 +23,6 @@ router.post('/upload', async (req, res) => {
 
         if (fileName && fileBase64) {
             const buffer = Buffer.from(fileBase64, 'base64');
-
-            // uploads klasörüne kaydet
             const uploadDir = path.join(__dirname, '..', 'uploads');
             if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
             const filePath = path.join(uploadDir, fileName);

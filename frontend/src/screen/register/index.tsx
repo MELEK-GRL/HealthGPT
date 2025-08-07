@@ -14,12 +14,12 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import AuthCard from '../../components/card/AuthCard';
 import colors from '../../theme/colors';
-import { useUserStore } from '../../store/userStore'; // ✅ store importu
+import { useUserStore } from '../../store/userStore';
 
 const Register = () => {
   const navigation = useNavigation();
   const { w1px, h1px, fs1px } = useResponsive();
-  const setUser = useUserStore(state => state.setUser); // ✅ store fonksiyonu
+  const setUser = useUserStore(state => state.setUser);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -48,7 +48,7 @@ const Register = () => {
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
 
-        setUser(data.user); // ✅ store'a kullanıcıyı yaz
+        setUser(data.user);
 
         navigation.navigate('MainLayout' as never);
       } else {

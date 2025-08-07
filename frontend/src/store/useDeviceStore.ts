@@ -1,9 +1,9 @@
-// src/store/useDeviceStore.ts
+
 import { create } from 'zustand';
 import { Dimensions } from 'react-native';
 
-const BASE_WIDTH = 375; // iPhone X genişliği
-const BASE_HEIGHT = 812; // iPhone X yüksekliği
+const BASE_WIDTH = 375;
+const BASE_HEIGHT = 812;
 
 interface DeviceState {
     width: number;
@@ -21,7 +21,7 @@ const useDeviceStore = create<DeviceState>(set => {
 
     const w1px = scaleWidth;
     const h1px = scaleHeight;
-    const fs1px = Math.min(scaleWidth, scaleHeight); // font boyutu için en küçük olan
+    const fs1px = Math.min(scaleWidth, scaleHeight);
 
     return {
         width,

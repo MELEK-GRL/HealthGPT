@@ -17,6 +17,8 @@ const colors = {
     textGray: "#333",
     textWhite: "#ffffff",
     textInput: "#f1f3f6",
+    backgroundPrupleSoft: "#ECEBFD",
+    backgroundPinkSoft: "#F8E8F0",
     // backgroundPrupleGradient: ['#7067F0', '#837BFA', '#5E55DB'] as [string, string, string],
     // backgroundPrupleGradient: [
     //     '#7269E5', // ana mor

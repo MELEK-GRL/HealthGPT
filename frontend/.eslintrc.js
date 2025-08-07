@@ -29,11 +29,10 @@ module.exports = {
   ],
   settings: {
     react: {
-      version: 'detect', // React versiyonunu otomatik algıla
+      version: 'detect',
     },
   },
   rules: {
-    // İstersen buraya kendi kural düzenlemelerini ekleyebilirsin
-    'react/react-in-jsx-scope': 'off', // React 17+ için gerekmez
+    'react/react-in-jsx-scope': 'off',
   },
 };
