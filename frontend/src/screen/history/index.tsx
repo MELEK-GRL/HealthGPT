@@ -12,6 +12,7 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
 import { useUserStore } from '../../store/userStore';
+import CenterModal from '../../components/modal/CenterModal';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -34,13 +35,16 @@ const History = () => {
   const { w1px, h1px, fs1px } = useResponsive();
   const isFocused = useIsFocused();
   const user = useUserStore(state => state.user);
-
+  const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
     if (isFocused) {
       fetchConversations();
     }
   }, [isFocused]);
 
+  const onClose = async () => {
+    setModalVisible(false);
+  };
   const fetchConversations = async () => {
     if (!user?._id) return;
     try {
@@ -140,13 +144,21 @@ const History = () => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => handleDelete(item._id)} style={styles.deleteButton}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.deleteButton}>
               <Text style={styles.deleteText}>Sil</Text>
             </TouchableOpacity>
+            <CenterModal
+              visible={modalVisible}
+              onClose={onClose}
+              onConfirm={() => handleDelete(item._id)}
+              message="Silmek İstediğinize emin misiniz??"
+            />
           </View>
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Henüz konuşma yok.</Text>}
       />
+
+
     </View>
   );
 };
