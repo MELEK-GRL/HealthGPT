@@ -7,6 +7,7 @@ import { RootStackParamList } from '../../navigation/NavigationTypes';
 import { useResponsive } from '../../utils/responsive';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import colors from '../../theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 const Splash = ({ navigation }: Props) => {
@@ -58,13 +59,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#AD68F9',
+    backgroundColor: colors.backgroundPruple,
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.textWhite,
     fontWeight: '600',
   },
 });

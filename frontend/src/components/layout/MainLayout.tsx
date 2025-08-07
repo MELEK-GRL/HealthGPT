@@ -5,9 +5,9 @@ import { SafeAreaView } from 'react-native';
 
 const MainLayout = () => {
   return <>
-  <SafeAreaView style={{flex:1}}>
-    <BottomTabNavigator />
-  </SafeAreaView>
+    <SafeAreaView style={{ flex: 1, }}>
+      <BottomTabNavigator />
+    </SafeAreaView>
   </>;
 };
 

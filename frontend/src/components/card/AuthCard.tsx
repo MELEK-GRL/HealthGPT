@@ -37,7 +37,7 @@ interface Props {
 }
 
 
-const LoginCard: React.FC<Props> = ({
+const AuthCard: React.FC<Props> = ({
     titleName,
     text,
     firstIconName,
@@ -191,4 +191,4 @@ const LoginCard: React.FC<Props> = ({
     );
 };
 
-export default LoginCard;
+export default AuthCard;

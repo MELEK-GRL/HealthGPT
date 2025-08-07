@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import colors from '../../theme/colors';
-import LoginCard from '../../components/card/AuthCard';
+import AuthCard from '../../components/card/AuthCard';
 
 const Login = ({ navigation }: any) => {
   const [name, setName] = useState('');
@@ -95,7 +95,7 @@ const Login = ({ navigation }: any) => {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          <LoginCard
+          <AuthCard
             titleName={'Giriş Yap'}
             firstPlaceholder="Kullanıcı Adı"
             firstIconName={"person-outline"}

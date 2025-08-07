@@ -9,6 +9,8 @@ import {
 import { pick, types } from '@react-native-documents/picker';
 import RNFS from 'react-native-fs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import colors from '../../theme/colors';
+import { useResponsive } from '../../utils/responsive';
 
 type Props = {
   onPdfSelected: (pdf: { name: string; base64: string }) => void;
@@ -16,6 +18,16 @@ type Props = {
 };
 
 const PdfUpload: React.FC<Props> = ({ onPdfSelected, selectedPdf }) => {
+  const { w1px, h1px, fs1px } = useResponsive();
+
+
+  const styles = StyleSheet.create({
+    iconWrapper: {
+      marginLeft: w1px * 10,
+      padding: w1px * 10,
+    },
+  });
+
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -83,18 +95,13 @@ const PdfUpload: React.FC<Props> = ({ onPdfSelected, selectedPdf }) => {
     <TouchableOpacity style={styles.iconWrapper} onPress={pickPdf}>
       <Icon
         name={selectedPdf ? 'checkmark-circle-outline' : 'document-attach-outline'}
-        size={24}
-        color={selectedPdf ? 'green' : '#0057d9'}
+        size={fs1px * 26}
+        color={selectedPdf ? 'green' : colors.buttonPruple}
       />
     </TouchableOpacity>
   );
 };
 
-const styles = StyleSheet.create({
-  iconWrapper: {
-    marginLeft: 10,
-    padding: 5,
-  },
-});
+
 
 export default PdfUpload;

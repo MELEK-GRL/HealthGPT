@@ -11,6 +11,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
+import colors from '../../theme/colors';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -47,7 +48,7 @@ const History = () => {
     const userStr = await AsyncStorage.getItem('user');
     if (!userStr) return;
     const user = JSON.parse(userStr);
- console.log('🧠 Parsed user:', JSON.stringify(user, null, 2));
+    console.log('🧠 Parsed user:', JSON.stringify(user, null, 2));
     try {
       const response = await fetch(`${API_BASE_URL}/conversations/${user._id}`);
       const data = await response.json();
@@ -80,10 +81,10 @@ const History = () => {
       padding: 16 * w1px,
     },
     title: {
-      fontSize: 20 * fs1px,
+      fontSize: 22 * fs1px,
       fontWeight: 'bold',
       marginBottom: 16 * h1px,
-      color: '#7D5BA6',
+      color: colors.backgroundPruple,
       textAlign: 'center',
     },
     item: {
@@ -93,13 +94,14 @@ const History = () => {
       borderRadius: 10 * fs1px,
       flexDirection: 'row',
       alignItems: 'center',
-      borderWidth: 2,
-      borderColor: '#7D5BA6',
+      borderWidth: 1,
+      borderColor: '#A89CC8',
       shadowColor: '#000',
-      shadowOpacity: 0.05,
+      shadowOpacity: 0.15,
       shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 4,
-      elevation: 2,
+      shadowRadius: 8,
+      elevation: 5,
+
     },
     text: {
       fontSize: 16 * fs1px,
@@ -118,7 +120,7 @@ const History = () => {
       fontSize: 14 * fs1px,
     },
     deleteButton: {
-      backgroundColor: '#F5A9D0',
+      backgroundColor: colors.backgroundPruple,
       paddingVertical: 6 * h1px,
       paddingHorizontal: 10 * w1px,
       borderRadius: 6 * fs1px,

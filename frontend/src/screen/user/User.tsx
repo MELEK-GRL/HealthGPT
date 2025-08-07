@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppContext } from '../../navigation/context/AppContext';
@@ -11,8 +12,11 @@ import { useResponsive } from '../../utils/responsive';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/NavigationTypes';
-import CenterModal from '../../components/modal/CenterModal'
+import CenterModal from '../../components/modal/CenterModal';
 import colors from '../../theme/colors';
+
+const avatarPlaceholder = 'https://cdn-icons-png.flaticon.com/512/9131/9131529.png';
+
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainLayout'>;
 
 type UserType = {
@@ -26,12 +30,70 @@ const User = () => {
   const navigation = useNavigation<NavigationProp>();
   const { setIsLoggedIn } = useAppContext();
   const { w1px, h1px, fs1px } = useResponsive();
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.backgroundLight,
-      padding: fs1px * 24,
+      padding: 24 * fs1px,
       justifyContent: 'center',
+    },
+    card: {
+      backgroundColor: '#fff',
+      borderRadius: 16 * fs1px,
+      padding: 24 * fs1px,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 3 },
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    avatar: {
+      width: 90 * w1px,
+      height: 90 * w1px,
+      borderRadius: 90,
+      marginBottom: 16 * h1px,
+      borderWidth: 2,
+      borderColor: colors.backgroundPruple,
+    },
+    name: {
+      fontSize: 20 * fs1px,
+      fontWeight: '700',
+      color: colors.textDark,
+      marginBottom: 4 * h1px,
+    },
+    email: {
+      fontSize: 15 * fs1px,
+      color: colors.textLight,
+      marginBottom: 20 * h1px,
+    },
+    section: {
+      marginTop: 40 * h1px,
+    },
+    label: {
+      fontSize: 15 * fs1px,
+      fontWeight: '600',
+      color: '#444',
+      marginBottom: 6 * h1px,
+    },
+    logoutButton: {
+      marginTop: 32 * h1px,
+      backgroundColor: colors.backgroundPruple,
+      paddingVertical: 14 * h1px,
+      paddingHorizontal: 20 * w1px,
+      borderRadius: 12 * fs1px,
+      shadowColor: '#000',
+      shadowOpacity: 0.08,
+      shadowOffset: { width: 0, height: 3 },
+      shadowRadius: 6,
+      elevation: 4,
+      alignSelf: 'center',
+    },
+    logoutText: {
+      fontSize: 16 * fs1px,
+      fontWeight: '600',
+      color: colors.textWhite,
     },
     center: {
       flex: 1,
@@ -42,36 +104,6 @@ const User = () => {
       fontSize: fs1px * 16,
       color: '#666',
     },
-    header: {
-      fontWeight: '700',
-      marginBottom: 24,
-      textAlign: 'center',
-      color: '#333',
-    },
-    infoBox: {
-      backgroundColor: '#fff',
-      borderRadius: 12,
-      padding: 20,
-      marginBottom: 32,
-      elevation: 2,
-    },
-    label: {
-      fontWeight: '600',
-      marginTop: 12,
-      color: '#444',
-    },
-    value: {
-      color: '#666',
-      marginBottom: 8,
-    },
-    logoutButton: {
-      backgroundColor: colors.primary,
-      alignItems: 'center',
-    },
-    logoutText: {
-      color: '#fff',
-      fontWeight: '600',
-    },
   });
 
   useEffect(() => {
@@ -81,7 +113,6 @@ const User = () => {
         setUser(JSON.parse(userData));
       }
     };
-
     fetchUser();
   }, []);
 
@@ -104,29 +135,19 @@ const User = () => {
     );
   }
 
-
-
   return (
     <View style={styles.container}>
-      <Text style={[styles.header, { fontSize: 22 * fs1px }]}>Profil Bilgileri</Text>
-
-      <View style={styles.infoBox}>
-        <Text style={[styles.label, { fontSize: 16 * fs1px }]}>👤 Ad:</Text>
-        <Text style={[styles.value, { fontSize: 15 * fs1px }]}>{user.name}</Text>
-
-        {user.email ? (
-          <>
-            <Text style={[styles.label, { fontSize: 16 * fs1px }]}>📧 E-posta:</Text>
-            <Text style={[styles.value, { fontSize: 15 * fs1px }]}>{user.email}</Text>
-          </>
-        ) : null}
+      <View style={styles.card}>
+        <Image source={{ uri: avatarPlaceholder }} style={styles.avatar} />
+        <Text style={styles.name}>{user.name}</Text>
+        {user.email && <Text style={styles.email}>{user.email}</Text>}
       </View>
 
       <TouchableOpacity
-        style={[styles.logoutButton, { paddingVertical: 14 * h1px, borderRadius: 10 * fs1px }]}
+        style={styles.logoutButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={[styles.logoutText, { fontSize: 16 * fs1px }]}>Çıkış Yap</Text>
+        <Text style={styles.logoutText}>Çıkış Yap</Text>
       </TouchableOpacity>
 
       <CenterModal
@@ -140,4 +161,3 @@ const User = () => {
 };
 
 export default User;
-

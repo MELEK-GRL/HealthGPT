@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
-import LoginCard from '../../components/card/AuthCard';
+import AuthCard from '../../components/card/AuthCard';
 
 
 const Register = () => {
@@ -114,7 +114,7 @@ const Register = () => {
           keyboardShouldPersistTaps="handled"
         >
 
-          <LoginCard
+          <AuthCard
             titleName={'Kayıt Ol'}
             firstPlaceholder="Kullanıcı Adı"
             firstIconName={"person-outline"}

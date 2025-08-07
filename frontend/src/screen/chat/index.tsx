@@ -21,6 +21,8 @@ import { API_BASE_URL } from '@env';
 import { useResponsive } from '../../utils/responsive';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LoadingAI from '../splash/LoadingAI';
+import colors from '../../theme/colors';
+import LinearGradient from 'react-native-linear-gradient';
 
 export type Message = {
   id: string;
@@ -204,48 +206,87 @@ const Chat: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <View style={styles.headerContent}>
+      <View>
+        {/* <View style={styles.headerContent}>
 
-        <TouchableOpacity
-          style={styles.headerNewChatButton}
-          onPress={() => {
-            const welcomeMessage: Message = {
-              id: uuid.v4().toString(),
-              text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
-              sender: 'ai',
-            };
-            setMessages([welcomeMessage]);
-            setCurrentConversationId(null);
-          }}
-        >
-          <View style={styles.newChatContent}>
-            <Icon name="chatbubble-ellipses-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-            <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+          <TouchableOpacity
+            style={styles.headerNewChatButton}
+            onPress={() => {
+              const welcomeMessage: Message = {
+                id: uuid.v4().toString(),
+                text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+                sender: 'ai',
+              };
+              setMessages([welcomeMessage]);
+              setCurrentConversationId(null);
+            }}
+          >
+            <View style={styles.newChatContent}>
+              <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
+              <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.header}>
+            <Icon
+              name="person-circle-outline"
+              size={24 * fs1px}
+              color={colors.textWhite}
+              style={{ marginRight: 6 * w1px }}
+            />
+            <Text style={styles.headerText}>{userName}</Text>
           </View>
-        </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Icon
-            name="person-circle-outline"
-            size={24 * fs1px}
-            color="#4B7BE5"
-            style={{ marginRight: 6 * w1px }}
-          />
-          <Text style={styles.headerText}>{userName}</Text>
-        </View>
+        </View> */}
+        <LinearGradient
+          colors={colors.backgroundPrupleGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerContent}
+        >
+          <TouchableOpacity
+            style={styles.headerNewChatButton}
+            onPress={() => {
+              const welcomeMessage: Message = {
+                id: uuid.v4().toString(),
+                text: `👨‍⚕️ Merhaba ${userName || ''}! Ben Doktor AI. Size nasıl yardımcı olabilirim?`,
+                sender: 'ai',
+              };
+              setMessages([welcomeMessage]);
+              setCurrentConversationId(null);
+            }}
+          >
+            <View style={styles.newChatContent}>
+              <Icon name="chatbubble-ellipses-outline" size={20} color={colors.textWhite} style={{ marginRight: 6 }} />
+              <Text style={styles.headerNewChatText}>Yeni Sohbet</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.header}>
+            <Icon
+              name="person-circle-outline"
+              size={24 * fs1px}
+              color={colors.textWhite}
+              style={{ marginRight: 6 * w1px }}
+            />
+            <Text style={styles.headerText}>{userName}</Text>
+          </View>
+        </LinearGradient>
 
       </View>
-      {isLoading ?
-        <LoadingAI /> :
+      <View style={styles.listContainer} >
+        {isLoading ?
+          <LoadingAI /> :
 
-        <FlatList
-          data={messages}
-          keyExtractor={item => item.id}
-          style={styles.messagesList}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          renderItem={renderMessage}
-        />
-      }
+          <FlatList
+            data={messages}
+            keyExtractor={item => item.id}
+            style={styles.messagesList}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            renderItem={renderMessage}
+          />
+        }
+      </View>
 
       <TextInputComponent
         value={inputText}
@@ -261,13 +302,15 @@ const Chat: React.FC = () => {
 export const useResponsiveStyles = () => {
   const { w1px, h1px, fs1px } = useResponsive();
   return StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f9fafd' },
+    container: { flex: 1, backgroundColor: colors.backgroundLight, },
     headerContent: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 12 * h1px,
-      backgroundColor: '#fff',
+      height: h1px * 120,
+      // backgroundColor: colors.backgroundPruple,
+      borderBottomLeftRadius: fs1px * 8,
+      borderBottomRightRadius: fs1px * 8,
     },
     headerMsg: {
       backgroundColor: 'gray',
@@ -288,7 +331,12 @@ export const useResponsiveStyles = () => {
     headerText: {
       fontSize: 16 * fs1px,
       fontWeight: '600',
-      color: '#4B7BE5',
+      color: colors.textWhite,
+    },
+    listContainer: {
+      flex: 1, backgroundColor: colors.backgroundLight,
+      // borderTopLeftRadius: fs1px * 8,
+      // borderTopRightRadius: fs1px * 8
     },
     messagesList: {
       flex: 1,
@@ -319,15 +367,15 @@ export const useResponsiveStyles = () => {
       color: '#333',
     },
     headerNewChatButton: {
-      backgroundColor: '#4B7BE5',
+      backgroundColor: colors.backgroundPrupleDark,
       paddingVertical: 8 * h1px,
       paddingHorizontal: 14 * w1px,
       borderRadius: 20 * fs1px,
       shadowColor: '#000',
       shadowOpacity: 0.1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 3,
-      elevation: 4,
+      shadowOffset: { width: 0, height: h1px * 2 },
+      shadowRadius: fs1px * 3,
+      elevation: fs1px * 4,
     },
     newChatContent: {
       flexDirection: 'row',
@@ -336,7 +384,7 @@ export const useResponsiveStyles = () => {
     headerNewChatText: {
       fontSize: 15 * fs1px,
       fontWeight: '600',
-      color: '#fff',
+      color: colors.textWhite,
     },
 
   });
