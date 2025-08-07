@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,6 +15,7 @@ import colors from '../../theme/colors';
 import { useUserStore } from '../../store/userStore';
 import CenterModal from '../../components/modal/CenterModal';
 import TopBar from '../../components/TopBar/TopBar';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type RootStackParamList = {
   Chat: { conversationId: string };
@@ -88,7 +90,8 @@ const History = () => {
     },
     item: {
       backgroundColor: '#ffffff',
-      padding: 16 * h1px,
+      paddingHorizontal: 10 * h1px,
+      paddingVertical: 10 * h1px,
       marginBottom: 12 * h1px,
       borderRadius: 10 * fs1px,
       flexDirection: 'row',
@@ -117,18 +120,22 @@ const History = () => {
       marginTop: 20 * h1px,
       fontSize: 14 * fs1px,
     },
-    deleteButton: {
-      backgroundColor: colors.backgroundPruple,
-      paddingVertical: 6 * h1px,
-      paddingHorizontal: 10 * w1px,
-      borderRadius: 6 * fs1px,
-      marginLeft: 10 * w1px,
+    avatar: {
+      width: 40 * w1px,
+      height: 40 * w1px,
+      borderRadius: 90,
+      borderWidth: 1,
+      borderColor: colors.backgroundPruple,
     },
-    deleteText: {
-      color: '#fff',
-      fontSize: 13 * fs1px,
-      fontWeight: 'bold',
+    listCard: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
+    listCardTextView: {
+      paddingLeft: w1px * 16
+    }
+
   });
 
   return (
@@ -142,15 +149,20 @@ const History = () => {
           keyExtractor={(item) => item._id}
           renderItem={({ item, index }) => (
             <View style={styles.item}>
-              <TouchableOpacity style={{ flex: 1 }} onPress={() => handlePress(item._id)}>
-                <Text style={styles.text}>Sohbet {index + 1}</Text>
-                <Text style={styles.date}>
-                  {new Date(item.createdAt).toLocaleString('tr-TR')}
-                </Text>
-              </TouchableOpacity>
+              <TouchableOpacity style={styles.listCard} onPress={() => handlePress(item._id)}>
+                <View>
+                  <Image source={require('../../assets/icons/historyIcon.png')} style={styles.avatar} />
+                </View>
+                <View style={styles.listCardTextView}>
+                  <Text style={styles.text}>Sohbet {index + 1}</Text>
+                  <Text style={styles.date}>
+                    {new Date(item.createdAt).toLocaleString('tr-TR')}
+                  </Text>
+                </View>
 
-              <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.deleteButton}>
-                <Text style={styles.deleteText}>Sil</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(true)} >
+                <Icon name="trash-outline" size={22 * fs1px} color={colors.backgroundPruple} />
               </TouchableOpacity>
               <CenterModal
                 visible={modalVisible}
